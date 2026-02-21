@@ -13,6 +13,7 @@ import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
 
 export default function Dashboard() {
   const [showTimeDialog, setShowTimeDialog] = useState(false);
+  const [revenuePeriod, setRevenuePeriod] = useState("7D");
   const queryClient = useQueryClient();
 
   const { data: leads = [], isLoading: loadingLeads } = useQuery({
@@ -194,7 +195,7 @@ export default function Dashboard() {
               }
               
               // Add revenue from closed won leads based on their created date
-              leads
+              allLeads
                 .filter(l => l.status === "closed_won" && l.project_price > 0)
                 .forEach(lead => {
                   const leadDate = new Date(lead.created_date).toISOString().split('T')[0];
@@ -208,7 +209,7 @@ export default function Dashboard() {
               const allDates = Object.keys(dailyRevenue).sort();
               
               // Get cumulative at start of period
-              leads
+              allLeads
                 .filter(l => l.status === "closed_won" && l.project_price > 0)
                 .forEach(lead => {
                   const leadDate = new Date(lead.created_date);
