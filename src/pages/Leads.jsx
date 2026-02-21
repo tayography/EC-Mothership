@@ -70,7 +70,18 @@ export default function Leads() {
     if (!result.destination) return;
     
     const leadId = result.draggableId;
-    const newStatus = result.destination.droppableId;
+    let newStatus = result.destination.droppableId;
+    
+    // If dropped in "closed" column, keep the original closed status
+    if (newStatus === "closed") {
+      const lead = leads.find(l => l.id === leadId);
+      // If already closed_won or closed_lost, keep it, otherwise default to closed_won
+      if (lead?.status !== "closed_won" && lead?.status !== "closed_lost") {
+        newStatus = "closed_won";
+      } else {
+        return; // Already in closed status, no update needed
+      }
+    }
     
     updateMutation.mutate({
       id: leadId,
