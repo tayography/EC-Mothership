@@ -15,6 +15,7 @@ const defaultLead = {
   phone: "",
   contact_person: "",
   ec_rep: "",
+  call_made_by: "",
   ec_tech: "",
   has_website: false,
   needs_new_website: false,
@@ -111,17 +112,34 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
             </div>
           </div>
 
-          <div>
-            <Label className="text-xs text-zinc-500 mb-1.5 block">Dedicated EC Tech</Label>
-            <Select value={form.ec_tech} onValueChange={(v) => handleChange("ec_tech", v)}>
-              <SelectTrigger className="rounded-xl border-zinc-200/60">
-                <SelectValue placeholder="Select tech" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Braden">Braden</SelectItem>
-                <SelectItem value="Taylor">Taylor</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs text-zinc-500 mb-1.5 block">Call Made By / Lead Provided By</Label>
+              <Select value={form.call_made_by} onValueChange={(v) => handleChange("call_made_by", v)}>
+                <SelectTrigger className="rounded-xl border-zinc-200/60">
+                  <SelectValue placeholder="Select person" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.full_name || user.email}>
+                      {user.full_name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs text-zinc-500 mb-1.5 block">Dedicated EC Tech</Label>
+              <Select value={form.ec_tech} onValueChange={(v) => handleChange("ec_tech", v)}>
+                <SelectTrigger className="rounded-xl border-zinc-200/60">
+                  <SelectValue placeholder="Select tech" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Braden">Braden</SelectItem>
+                  <SelectItem value="Taylor">Taylor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">

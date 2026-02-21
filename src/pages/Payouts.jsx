@@ -14,6 +14,12 @@ export default function Payouts() {
     initialData: [],
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   // Filter won leads
   const wonLeads = leads.filter(l => l.status === "closed_won" && l.updated_date);
 
@@ -35,36 +41,49 @@ export default function Payouts() {
 
   // Calculate payouts
   const calculatePayouts = () => {
-    const payouts = {
-      Braden: { base: 0, commission: 0, total: 0, leads: [] },
-      Taylor: { base: 0, commission: 0, total: 0, leads: [] }
-    };
+    const payouts = {};
+
+    // Initialize all users
+    users.forEach(user => {
+      const name = user.full_name || user.email;
+      payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
+    });
+
+    // Ensure Braden, Taylor, and Jami are included
+    ['Braden', 'Taylor', 'Jami'].forEach(name => {
+      if (!payouts[name]) {
+        payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
+      }
+    });
 
     yearLeads.forEach(lead => {
       const price = lead.project_price || 0;
       
       // Base 45% for both Braden and Taylor
-      payouts.Braden.base += price * 0.45;
-      payouts.Taylor.base += price * 0.45;
+      if (payouts.Braden) payouts.Braden.base += price * 0.45;
+      if (payouts.Taylor) payouts.Taylor.base += price * 0.45;
 
-      // Additional 10% if they were the EC Rep
-      if (lead.ec_rep === "Braden") {
-        payouts.Braden.commission += price * 0.10;
-        payouts.Braden.leads.push({ ...lead, isRep: true });
-      } else {
-        payouts.Braden.leads.push({ ...lead, isRep: false });
+      // 10% commission based on call_made_by field
+      const callMadeBy = lead.call_made_by;
+      if (callMadeBy && payouts[callMadeBy]) {
+        payouts[callMadeBy].commission += price * 0.10;
       }
 
-      if (lead.ec_rep === "Taylor") {
-        payouts.Taylor.commission += price * 0.10;
-        payouts.Taylor.leads.push({ ...lead, isRep: true });
-      } else {
-        payouts.Taylor.leads.push({ ...lead, isRep: false });
-      }
+      // Track leads for each person who gets a commission
+      Object.keys(payouts).forEach(name => {
+        const hasCommission = callMadeBy === name;
+        const hasBase = (name === 'Braden' || name === 'Taylor');
+        
+        if (hasCommission || hasBase) {
+          payouts[name].leads.push({ ...lead, hasCallCommission: hasCommission });
+        }
+      });
     });
 
-    payouts.Braden.total = payouts.Braden.base + payouts.Braden.commission;
-    payouts.Taylor.total = payouts.Taylor.base + payouts.Taylor.commission;
+    // Calculate totals
+    Object.keys(payouts).forEach(name => {
+      payouts[name].total = payouts[name].base + payouts[name].commission;
+    });
 
     return payouts;
   };
@@ -135,76 +154,46 @@ export default function Payouts() {
       </div>
 
       {/* Payout Details */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Braden */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-zinc-900 mb-4">Braden</h3>
-          
-          <div className="space-y-3 mb-6">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <span className="text-sm text-zinc-600">Base Commission (45%)</span>
-              <span className="text-sm font-semibold text-zinc-900">${payouts.Braden.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <span className="text-sm text-zinc-600">Rep Commission (10%)</span>
-              <span className="text-sm font-semibold text-zinc-900">${payouts.Braden.commission.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-base font-semibold text-zinc-900">Total Payout</span>
-              <span className="text-2xl font-bold text-emerald-600">${payouts.Braden.total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-          </div>
-
-          <div className="text-xs text-zinc-500 mb-2">Leads ({payouts.Braden.leads.length})</div>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {payouts.Braden.leads.map(lead => (
-              <div key={lead.id} className="bg-zinc-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-zinc-900">{lead.business_name}</span>
-                  {lead.isRep && (
-                    <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">EC Rep</span>
-                  )}
-                </div>
-                <div className="text-xs text-zinc-500">${(lead.project_price || 0).toLocaleString()}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.entries(payouts).map(([name, data]) => (
+          <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6">
+            <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
+            
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
+                <span className="text-sm text-zinc-600">Base Commission (45%)</span>
+                <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Taylor */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-zinc-900 mb-4">Taylor</h3>
-          
-          <div className="space-y-3 mb-6">
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <span className="text-sm text-zinc-600">Base Commission (45%)</span>
-              <span className="text-sm font-semibold text-zinc-900">${payouts.Taylor.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-              <span className="text-sm text-zinc-600">Rep Commission (10%)</span>
-              <span className="text-sm font-semibold text-zinc-900">${payouts.Taylor.commission.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-base font-semibold text-zinc-900">Total Payout</span>
-              <span className="text-2xl font-bold text-emerald-600">${payouts.Taylor.total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-            </div>
-          </div>
-
-          <div className="text-xs text-zinc-500 mb-2">Leads ({payouts.Taylor.leads.length})</div>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {payouts.Taylor.leads.map(lead => (
-              <div key={lead.id} className="bg-zinc-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-zinc-900">{lead.business_name}</span>
-                  {lead.isRep && (
-                    <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">EC Rep</span>
-                  )}
-                </div>
-                <div className="text-xs text-zinc-500">${(lead.project_price || 0).toLocaleString()}</div>
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
+                <span className="text-sm text-zinc-600">Call Commission (10%)</span>
+                <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
               </div>
-            ))}
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-base font-semibold text-zinc-900">Total Payout</span>
+                <span className="text-2xl font-bold text-emerald-600">${data.total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+              </div>
+            </div>
+
+            {data.leads.length > 0 && (
+              <>
+                <div className="text-xs text-zinc-500 mb-2">Leads ({data.leads.length})</div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {data.leads.map(lead => (
+                    <div key={lead.id} className="bg-zinc-50 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-zinc-900">{lead.business_name}</span>
+                        {lead.hasCallCommission && (
+                          <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">Call Made</span>
+                        )}
+                      </div>
+                      <div className="text-xs text-zinc-500">${(lead.project_price || 0).toLocaleString()}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        ))}
       </div>
     </PageTransition>
   );

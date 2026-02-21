@@ -217,6 +217,25 @@ export default function LeadProfile() {
                 </Select>
               </div>
               <div>
+                <Label className="text-xs text-zinc-500 mb-1.5">Call Made By / Lead Provided By</Label>
+                <Select
+                  value={formData.call_made_by || ""}
+                  onValueChange={(value) => handleChange("call_made_by", value)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger disabled={!canEdit}>
+                    <SelectValue placeholder="Select person" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.full_name || user.email}>
+                        {user.full_name || user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <Label className="text-xs text-zinc-500 mb-1.5">Dedicated EC Tech</Label>
                 <Select
                   value={formData.ec_tech || ""}
