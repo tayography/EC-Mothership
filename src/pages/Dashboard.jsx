@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { DollarSign, Users, Target, TrendingUp, Clock } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tantml:react-query";
+import { DollarSign, Users, Target, TrendingUp, Clock, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
@@ -9,6 +9,8 @@ import StatCard from "../components/dashboard/StatCard";
 import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
 import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
+import { createPageUrl } from "@/utils";
+import { format } from "date-fns";
 
 
 export default function Dashboard() {
@@ -166,63 +168,54 @@ export default function Dashboard() {
             selectedPeriod={revenuePeriod}
             onPeriodChange={setRevenuePeriod}
             data={(() => {
-              // Start from Feb 1, 2026 at $0
-              const startDate = new Date('2026-02-01');
               const today = new Date();
+              let startDate;
+              let dateFormat;
               
-              // Determine filter date based on period
-              let filterDate = new Date(startDate);
               if (revenuePeriod === "7D") {
-                filterDate = new Date(today);
-                filterDate.setDate(filterDate.getDate() - 7);
+                startDate = new Date(today);
+                startDate.setDate(startDate.getDate() - 7);
+                dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
               } else if (revenuePeriod === "1M") {
-                filterDate = new Date(today);
-                filterDate.setMonth(filterDate.getMonth() - 1);
+                startDate = new Date(today);
+                startDate.setMonth(startDate.getMonth() - 1);
+                dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
               } else if (revenuePeriod === "1Y") {
-                filterDate = new Date(today);
-                filterDate.setFullYear(filterDate.getFullYear() - 1);
+                startDate = new Date(today);
+                startDate.setFullYear(startDate.getFullYear() - 1);
+                dateFormat = (d) => `${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
               }
-              
-              // Use the later of startDate or filterDate
-              const effectiveStart = filterDate > startDate ? filterDate : startDate;
               
               const dailyRevenue = {};
               
-              // Initialize all days from effective start to today with $0
-              for (let d = new Date(effectiveStart); d <= today; d.setDate(d.getDate() + 1)) {
+              // Initialize all days with $0
+              for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
                 const dateKey = d.toISOString().split('T')[0];
                 dailyRevenue[dateKey] = 0;
               }
               
-              // Add revenue from closed won leads based on their created date
+              // Add revenue from closed won leads
               allLeads
                 .filter(l => l.status === "closed_won" && l.project_price > 0)
                 .forEach(lead => {
-                  const leadDate = new Date(lead.created_date).toISOString().split('T')[0];
-                  if (dailyRevenue.hasOwnProperty(leadDate)) {
-                    dailyRevenue[leadDate] += lead.project_price;
+                  const leadDate = new Date(lead.updated_date || lead.created_date);
+                  if (leadDate >= startDate && leadDate <= today) {
+                    const dateKey = leadDate.toISOString().split('T')[0];
+                    if (dailyRevenue.hasOwnProperty(dateKey)) {
+                      dailyRevenue[dateKey] += lead.project_price;
+                    }
                   }
                 });
               
-              // Calculate cumulative revenue from Feb 1st
+              // Calculate cumulative revenue
               let cumulative = 0;
               const allDates = Object.keys(dailyRevenue).sort();
-              
-              // Get cumulative at start of period
-              allLeads
-                .filter(l => l.status === "closed_won" && l.project_price > 0)
-                .forEach(lead => {
-                  const leadDate = new Date(lead.created_date);
-                  if (leadDate < effectiveStart && leadDate >= startDate) {
-                    cumulative += lead.project_price;
-                  }
-                });
               
               return allDates.map(date => {
                 cumulative += dailyRevenue[date];
                 const d = new Date(date);
                 return {
-                  name: `${d.getMonth() + 1}/${d.getDate()}`,
+                  name: dateFormat(d),
                   value: cumulative
                 };
               });
@@ -230,10 +223,42 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Activity Feed */}
+        {/* Recent Leads Widget */}
         <div className="bg-white border border-zinc-200/60 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-zinc-900 mb-4">Recent Activity</h3>
-          <ActivityFeed activities={activities} isLoading={loadingActivities} />
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
+            <Button
+              onClick={() => window.location.href = createPageUrl("Leads")}
+              size="sm"
+              className="bg-violet-600 hover:bg-violet-700 h-7 text-xs rounded-lg"
+            >
+              <Plus className="w-3 h-3 mr-1" />
+              New Lead
+            </Button>
+          </div>
+          <div className="space-y-2">
+            {leads.slice(0, 5).map((lead) => (
+              <div
+                key={lead.id}
+                onClick={() => window.location.href = createPageUrl("LeadProfile") + `?id=${lead.id}`}
+                className="p-3 rounded-xl hover:bg-zinc-50 cursor-pointer transition-colors border border-zinc-100"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-900 truncate">{lead.business_name}</p>
+                    <p className="text-xs text-zinc-400 mt-0.5">
+                      {format(new Date(lead.created_date), 'MMM d, h:mm a')}
+                    </p>
+                  </div>
+                  {lead.project_price > 0 && (
+                    <span className="text-xs font-semibold text-emerald-600 ml-2">
+                      ${lead.project_price.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
