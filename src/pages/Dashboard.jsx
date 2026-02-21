@@ -30,6 +30,12 @@ export default function Dashboard() {
     initialData: [],
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
     queryKey: ["activities"],
     queryFn: () => base44.entities.Activity.list("-created_date", 6),
@@ -135,6 +141,20 @@ export default function Dashboard() {
     },
   ];
 
+  // Calculate leaderboard
+  const leaderboard = users.map(user => {
+    const userWonLeads = allLeads.filter(l => 
+      l.status === "closed_won" && 
+      (l.ec_rep === user.full_name || l.ec_rep === user.email)
+    );
+    return {
+      name: user.full_name || user.email,
+      email: user.email,
+      wins: userWonLeads.length,
+      revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0)
+    };
+  }).sort((a, b) => b.wins - a.wins);
+
   return (
     <PageTransition>
       <div className="flex items-center justify-between mb-6">
@@ -156,6 +176,45 @@ export default function Dashboard() {
         {statCards.map((stat, i) => (
           <StatCard key={stat.title} {...stat} index={i} />
         ))}
+      </div>
+
+      {/* Leaderboard */}
+      <div className="mb-6">
+        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-zinc-900 mb-4">🏆 Leaderboard</h3>
+          <div className="space-y-2">
+            {leaderboard.map((rep, index) => (
+              <div
+                key={rep.email}
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm ${
+                    index === 0 ? 'bg-amber-100 text-amber-700' :
+                    index === 1 ? 'bg-zinc-200 text-zinc-700' :
+                    index === 2 ? 'bg-orange-100 text-orange-700' :
+                    'bg-zinc-50 text-zinc-500'
+                  }`}>
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-zinc-900">{rep.name}</p>
+                    {rep.revenue > 0 && (
+                      <p className="text-xs text-emerald-600">${rep.revenue.toLocaleString()} revenue</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-zinc-900">{rep.wins}</span>
+                  <span className="text-xs text-zinc-400">wins</span>
+                </div>
+              </div>
+            ))}
+            {leaderboard.length === 0 && (
+              <p className="text-sm text-zinc-400 text-center py-4">No reps yet</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Bento Grid */}
