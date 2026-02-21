@@ -15,6 +15,12 @@ export default function LeadProfile() {
   const urlParams = new URLSearchParams(window.location.search);
   const leadId = urlParams.get("id");
   const queryClient = useQueryClient();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [canEdit, setCanEdit] = useState(false);
+
+  React.useEffect(() => {
+    base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
+  }, []);
 
   const { data: lead, isLoading } = useQuery({
     queryKey: ["lead", leadId],
@@ -33,8 +39,21 @@ export default function LeadProfile() {
     }
   }, [lead]);
 
+  React.useEffect(() => {
+    if (currentUser && lead) {
+      const isAdmin = currentUser.role === 'admin';
+      const isAssignedRep = lead.ec_rep === currentUser.full_name || lead.ec_rep === currentUser.email;
+      setCanEdit(isAdmin || isAssignedRep);
+    }
+  }, [currentUser, lead]);
+
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.entities.Lead.update(leadId, data),
+    mutationFn: (data) => {
+      if (!canEdit) {
+        throw new Error("You don't have permission to edit this lead");
+      }
+      return base44.entities.Lead.update(leadId, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", leadId] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });
@@ -42,10 +61,12 @@ export default function LeadProfile() {
   });
 
   const handleChange = (field, value) => {
+    if (!canEdit) return;
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
+    if (!canEdit) return;
     updateMutation.mutate(formData);
   };
 
@@ -93,38 +114,47 @@ export default function LeadProfile() {
             <p className="text-sm text-zinc-400 mt-1">Lead Profile</p>
           </div>
           <div className="flex gap-2">
-            <Button
-              onClick={handleSave}
-              disabled={updateMutation.isPending}
-              className="bg-violet-600 hover:bg-violet-700"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {updateMutation.isPending ? "Saving..." : "Save Changes"}
-            </Button>
-            {lead.status !== "closed_won" && lead.status !== "closed_lost" && (
+            {!canEdit && (
+              <div className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                View only - You can only edit leads assigned to you
+              </div>
+            )}
+            {canEdit && (
               <>
                 <Button
-                  onClick={() => {
-                    handleChange("status", "closed_won");
-                    updateMutation.mutate({ ...formData, status: "closed_won" });
-                  }}
+                  onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  variant="outline"
-                  className="border-green-600 text-green-600 hover:bg-green-50"
+                  className="bg-violet-600 hover:bg-violet-700"
                 >
-                  Mark Won
+                  <Save className="w-4 h-4 mr-2" />
+                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
-                <Button
-                  onClick={() => {
-                    handleChange("status", "closed_lost");
-                    updateMutation.mutate({ ...formData, status: "closed_lost" });
-                  }}
-                  disabled={updateMutation.isPending}
-                  variant="outline"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
-                >
-                  Mark Lost
-                </Button>
+                {lead.status !== "closed_won" && lead.status !== "closed_lost" && (
+                  <>
+                    <Button
+                      onClick={() => {
+                        handleChange("status", "closed_won");
+                        updateMutation.mutate({ ...formData, status: "closed_won" });
+                      }}
+                      disabled={updateMutation.isPending}
+                      variant="outline"
+                      className="border-green-600 text-green-600 hover:bg-green-50"
+                    >
+                      Mark Won
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        handleChange("status", "closed_lost");
+                        updateMutation.mutate({ ...formData, status: "closed_lost" });
+                      }}
+                      disabled={updateMutation.isPending}
+                      variant="outline"
+                      className="border-red-600 text-red-600 hover:bg-red-50"
+                    >
+                      Mark Lost
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -142,6 +172,7 @@ export default function LeadProfile() {
                 <Input
                   value={formData.business_name || ""}
                   onChange={(e) => handleChange("business_name", e.target.value)}
+                  disabled={!canEdit}
                 />
               </div>
               <div>
@@ -149,6 +180,7 @@ export default function LeadProfile() {
                 <Input
                   value={formData.contact_person || ""}
                   onChange={(e) => handleChange("contact_person", e.target.value)}
+                  disabled={!canEdit}
                 />
               </div>
               <div>
@@ -156,6 +188,7 @@ export default function LeadProfile() {
                 <Input
                   value={formData.phone || ""}
                   onChange={(e) => handleChange("phone", e.target.value)}
+                  disabled={!canEdit}
                 />
               </div>
               <div>
@@ -163,6 +196,7 @@ export default function LeadProfile() {
                 <Input
                   value={formData.ec_rep || ""}
                   onChange={(e) => handleChange("ec_rep", e.target.value)}
+                  disabled={!canEdit}
                 />
               </div>
             </div>
@@ -176,8 +210,9 @@ export default function LeadProfile() {
                 <Select
                   value={formData.status || "new"}
                   onValueChange={(value) => handleChange("status", value)}
+                  disabled={!canEdit}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger disabled={!canEdit}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -198,6 +233,7 @@ export default function LeadProfile() {
                   type="number"
                   value={formData.project_price || 0}
                   onChange={(e) => handleChange("project_price", parseFloat(e.target.value) || 0)}
+                  disabled={!canEdit}
                 />
               </div>
               <div>
@@ -207,6 +243,7 @@ export default function LeadProfile() {
                   onChange={(e) => handleChange("lead_need", e.target.value)}
                   placeholder="What does this lead need?"
                   rows={3}
+                  disabled={!canEdit}
                 />
               </div>
               <div>
@@ -215,6 +252,7 @@ export default function LeadProfile() {
                   value={formData.notes || ""}
                   onChange={(e) => handleChange("notes", e.target.value)}
                   rows={4}
+                  disabled={!canEdit}
                 />
               </div>
             </div>
@@ -231,6 +269,7 @@ export default function LeadProfile() {
                 <Switch
                   checked={formData.called || false}
                   onCheckedChange={(checked) => handleChange("called", checked)}
+                  disabled={!canEdit}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -238,6 +277,7 @@ export default function LeadProfile() {
                 <Switch
                   checked={formData.interested || false}
                   onCheckedChange={(checked) => handleChange("interested", checked)}
+                  disabled={!canEdit}
                 />
               </div>
             </div>
@@ -251,6 +291,7 @@ export default function LeadProfile() {
                 <Switch
                   checked={formData.has_website || false}
                   onCheckedChange={(checked) => handleChange("has_website", checked)}
+                  disabled={!canEdit}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -258,6 +299,7 @@ export default function LeadProfile() {
                 <Switch
                   checked={formData.needs_new_website || false}
                   onCheckedChange={(checked) => handleChange("needs_new_website", checked)}
+                  disabled={!canEdit}
                 />
               </div>
               <div className="flex items-center justify-between">
@@ -265,6 +307,7 @@ export default function LeadProfile() {
                 <Switch
                   checked={formData.needs_ad_services || false}
                   onCheckedChange={(checked) => handleChange("needs_ad_services", checked)}
+                  disabled={!canEdit}
                 />
               </div>
             </div>
