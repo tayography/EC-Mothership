@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Phone, Mail, User, Clock, DollarSign, Save, ChevronLeft, ChevronRight } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Phone, Mail, User, Clock, DollarSign, Save, ChevronLeft, ChevronRight, ThumbsUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +18,7 @@ export default function LeadProfile() {
   const queryClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState(null);
   const [canEdit, setCanEdit] = useState(false);
+  const [showThumbsUp, setShowThumbsUp] = useState(false);
 
   React.useEffect(() => {
     base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
@@ -76,7 +77,8 @@ export default function LeadProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", leadId] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });
-      toast.success("Lead saved successfully");
+      setShowThumbsUp(true);
+      setTimeout(() => setShowThumbsUp(false), 2000);
     },
   });
 
@@ -133,7 +135,20 @@ export default function LeadProfile() {
   }
 
   return (
-    <PageTransition>
+    <>
+      <AnimatePresence>
+        {showThumbsUp && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-cyan-600 text-white rounded-full p-8 shadow-2xl"
+          >
+            <ThumbsUp className="w-16 h-16" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <PageTransition>
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <Button
