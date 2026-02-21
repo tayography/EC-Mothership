@@ -11,20 +11,20 @@ export default function Payouts() {
   const { data: leads = [] } = useQuery({
     queryKey: ["leads"],
     queryFn: () => base44.entities.Lead.list(),
-    initialData: [],
+    initialData: []
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: () => base44.entities.User.list(),
-    initialData: [],
+    initialData: []
   });
 
   // Filter won leads
-  const wonLeads = leads.filter(l => l.status === "closed_won" && l.updated_date);
+  const wonLeads = leads.filter((l) => l.status === "closed_won" && l.updated_date);
 
   // Get available fiscal years
-  const fiscalYears = [...new Set(wonLeads.map(l => {
+  const fiscalYears = [...new Set(wonLeads.map((l) => {
     const date = new Date(l.updated_date);
     return date.getFullYear();
   }))].sort((a, b) => b - a);
@@ -34,7 +34,7 @@ export default function Payouts() {
   }
 
   // Filter leads by fiscal year
-  const yearLeads = wonLeads.filter(l => {
+  const yearLeads = wonLeads.filter((l) => {
     const date = new Date(l.updated_date);
     return date.getFullYear() === selectedYear;
   });
@@ -44,13 +44,13 @@ export default function Payouts() {
     const payouts = {};
 
     // Only track these 3 people
-    ['Braden', 'Taylor', 'Jami'].forEach(name => {
+    ['Braden', 'Taylor', 'Jami'].forEach((name) => {
       payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
     });
 
-    yearLeads.forEach(lead => {
+    yearLeads.forEach((lead) => {
       const price = lead.project_price || 0;
-      
+
       // Base 45% for both Braden and Taylor
       if (payouts.Braden) payouts.Braden.base += price * 0.45;
       if (payouts.Taylor) payouts.Taylor.base += price * 0.45;
@@ -62,10 +62,10 @@ export default function Payouts() {
       }
 
       // Track leads for each person who gets a commission
-      Object.keys(payouts).forEach(name => {
+      Object.keys(payouts).forEach((name) => {
         const hasCommission = callMadeBy === name;
-        const hasBase = (name === 'Braden' || name === 'Taylor');
-        
+        const hasBase = name === 'Braden' || name === 'Taylor';
+
         if (hasCommission || hasBase) {
           payouts[name].leads.push({ ...lead, hasCallCommission: hasCommission });
         }
@@ -73,7 +73,7 @@ export default function Payouts() {
     });
 
     // Calculate totals
-    Object.keys(payouts).forEach(name => {
+    Object.keys(payouts).forEach((name) => {
       payouts[name].total = payouts[name].base + payouts[name].commission;
     });
 
@@ -96,11 +96,11 @@ export default function Payouts() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {fiscalYears.map(year => (
-                <SelectItem key={year} value={year.toString()}>
+              {fiscalYears.map((year) =>
+              <SelectItem key={year} value={year.toString()}>
                   {year}
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -147,48 +147,48 @@ export default function Payouts() {
 
       {/* Payout Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.entries(payouts).map(([name, data]) => (
-          <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6">
+        {Object.entries(payouts).map(([name, data]) =>
+        <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6">
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
             
             <div className="space-y-3 mb-6">
-              {name !== 'Jami' && (
-                <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
+              {name !== 'Jami' &&
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                   <span className="text-sm text-zinc-600">Base Commission (45%)</span>
-                  <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                  <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
-              )}
+            }
               <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                 <span className="text-sm text-zinc-600">Call Commission (10%)</span>
-                <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex items-center justify-between pt-2">
                 <span className="text-base font-semibold text-zinc-900">Total Payout</span>
-                <span className="text-2xl font-bold text-emerald-600">${data.total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="text-2xl font-bold text-emerald-600">${data.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             </div>
 
-            {data.leads.length > 0 && (
-              <>
+            {data.leads.length > 0 &&
+          <>
                 <div className="text-xs text-zinc-500 mb-2">Leads ({data.leads.length})</div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {data.leads.map(lead => (
-                    <div key={lead.id} className="bg-zinc-50 rounded-lg p-3">
+                  {data.leads.map((lead) =>
+              <div key={lead.id} className="bg-zinc-50 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-zinc-900">{lead.business_name}</span>
-                        {lead.hasCallCommission && (
-                          <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">Call Made</span>
-                        )}
+                        {lead.hasCallCommission &&
+                  <span className="bg-slate-700 text-sky-400 px-2 py-0.5 text-xs rounded">Call Made</span>
+                  }
                       </div>
                       <div className="text-xs text-zinc-500">${(lead.project_price || 0).toLocaleString()}</div>
                     </div>
-                  ))}
+              )}
                 </div>
               </>
-            )}
+          }
           </div>
-        ))}
+        )}
       </div>
-    </PageTransition>
-  );
+    </PageTransition>);
+
 }
