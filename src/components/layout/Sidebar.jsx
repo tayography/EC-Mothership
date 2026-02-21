@@ -43,7 +43,7 @@ export default function Sidebar({ currentPage }) {
   const navItems = allNavItems.filter(item => {
     if (!item.restrictedTo) return true;
     if (!currentUser) return false;
-    return item.restrictedTo.includes(currentUser.full_name);
+    return currentUser.role === 'admin' || item.restrictedTo.includes(currentUser.full_name);
   });
 
   const handleLogout = () => {
