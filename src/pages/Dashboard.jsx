@@ -300,6 +300,42 @@ export default function Dashboard() {
         <FollowUpCalendar leads={allLeads} />
       </div>
 
+      {/* Recent Leads */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
+          <a href={createPageUrl("Leads")} className="text-xs text-violet-600 hover:text-violet-700 font-medium transition-colors">
+            View pipeline →
+          </a>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {loadingLeads
+            ? Array(4).fill(0).map((_, i) => (
+                <div key={i} className="bg-white border border-zinc-200/60 rounded-2xl p-5 animate-pulse">
+                  <div className="h-4 bg-zinc-100 rounded w-3/4 mb-3" />
+                  <div className="h-3 bg-zinc-50 rounded w-full mb-2" />
+                  <div className="h-3 bg-zinc-50 rounded w-2/3" />
+                </div>
+              ))
+            : leads.map((lead) => (
+                <div
+                  key={lead.id}
+                  onClick={() => window.location.href = createPageUrl("LeadProfile") + `?id=${lead.id}`}
+                  className="bg-white border border-zinc-200/60 rounded-2xl p-4 hover:shadow-lg transition-all cursor-pointer"
+                >
+                  <h4 className="font-semibold text-sm text-zinc-900 mb-2">{lead.business_name}</h4>
+                  <div className="flex items-center justify-between text-xs text-zinc-500">
+                    <span className="capitalize">{lead.status.replace(/_/g, " ")}</span>
+                    {lead.project_price > 0 && (
+                      <span className="text-emerald-600 font-medium">${lead.project_price.toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
+              ))
+          }
+        </div>
+      </div>
+
       <ManualTimeEntryDialog
         open={showTimeDialog}
         onOpenChange={setShowTimeDialog}
