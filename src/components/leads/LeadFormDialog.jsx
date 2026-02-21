@@ -14,7 +14,6 @@ const defaultLead = {
   business_name: "",
   phone: "",
   contact_person: "",
-  ec_rep: "",
   call_made_by: "",
   ec_tech: "",
   has_website: false,
