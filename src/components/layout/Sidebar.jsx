@@ -54,9 +54,11 @@ export default function Sidebar({ currentPage }) {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-8">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-          <Rocket className="w-5 h-5 text-white" />
-        </div>
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69991f8ebcf017a40f7536b2/99d55a53e_ECMOTHERSHIP.png" 
+          alt="EC Mothership"
+          className="w-9 h-9 rounded-xl object-cover shadow-lg"
+        />
         <AnimatePresence>
           {!collapsed && (
             <motion.div
