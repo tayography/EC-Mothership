@@ -34,13 +34,13 @@ export default function LeadProfile() {
   const commissionPeople = [
     { id: "braden", name: "Braden" },
     { id: "taylor", name: "Taylor" },
-    { id: "jami", name: "Jami Schnakenberg" }
+    { id: "jami", name: "Jami" }
   ];
 
   const commissionPeopleMap = {
     "Braden": "braden@theendlesscreative.com",
     "Taylor": "taylor@theendlesscreative.com",
-    "Jami Schnakenberg": "Jami.schnakenberg85@gmail.com"
+    "Jami": "Jami.schnakenberg85@gmail.com"
   };
 
   const [formData, setFormData] = useState({});

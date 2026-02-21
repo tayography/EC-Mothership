@@ -33,7 +33,7 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
   const commissionPeople = [
     { id: "braden", name: "Braden" },
     { id: "taylor", name: "Taylor" },
-    { id: "jami", name: "Jami Schnakenberg" }
+    { id: "jami", name: "Jami" }
   ];
 
   useEffect(() => {

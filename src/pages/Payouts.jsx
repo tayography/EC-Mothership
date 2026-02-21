@@ -43,17 +43,9 @@ export default function Payouts() {
   const calculatePayouts = () => {
     const payouts = {};
 
-    // Initialize all users
-    users.forEach(user => {
-      const name = user.full_name || user.email;
-      payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
-    });
-
-    // Ensure Braden, Taylor, and Jami are included
+    // Only track these 3 people
     ['Braden', 'Taylor', 'Jami'].forEach(name => {
-      if (!payouts[name]) {
-        payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
-      }
+      payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
     });
 
     yearLeads.forEach(lead => {
