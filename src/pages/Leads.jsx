@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Phone } from "lucide-react";
+import { Plus, Phone, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import LeadCard from "../components/leads/LeadCard";
 import LeadFormDialog from "../components/leads/LeadFormDialog";
 import LeadsToCall from "../components/leads/LeadsToCall";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { motion, AnimatePresence } from "framer-motion";
 
 const stages = [
   { id: "new", label: "New", color: "bg-zinc-100" },
@@ -25,7 +25,15 @@ const stages = [
 export default function Leads() {
   const [showForm, setShowForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
+  const [expandedStages, setExpandedStages] = useState({});
   const queryClient = useQueryClient();
+
+  const toggleStage = (stageId) => {
+    setExpandedStages(prev => ({
+      ...prev,
+      [stageId]: !prev[stageId]
+    }));
+  };
 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ["leads"],
@@ -72,29 +80,6 @@ export default function Leads() {
     } else {
       createMutation.mutate(data);
     }
-  };
-
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-    
-    const leadId = result.draggableId;
-    let newStatus = result.destination.droppableId;
-    
-    // If dropped in "closed" column, keep the original closed status
-    if (newStatus === "closed") {
-      const lead = leads.find(l => l.id === leadId);
-      // If already closed_won or closed_lost, keep it, otherwise default to closed_won
-      if (lead?.status !== "closed_won" && lead?.status !== "closed_lost") {
-        newStatus = "closed_won";
-      } else {
-        return; // Already in closed status, no update needed
-      }
-    }
-    
-    updateMutation.mutate({
-      id: leadId,
-      data: { status: newStatus },
-    });
   };
 
   const handleCallUpdate = (leadId, data) => {
@@ -154,51 +139,64 @@ export default function Leads() {
         </div>
       )}
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {stages.map((stage) => (
-            <div key={stage.id} className="flex-shrink-0 w-72">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
+      <div className="space-y-3">
+        {stages.map((stage) => {
+          const stageLeads = groupedLeads[stage.id] || [];
+          const isExpanded = expandedStages[stage.id];
+          const displayLeads = isExpanded ? stageLeads : stageLeads.slice(0, 1);
+
+          if (stageLeads.length === 0) return null;
+
+          return (
+            <div key={stage.id} className="bg-white border border-zinc-200/60 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${stage.color}`} />
-                  <h3 className="text-sm font-semibold text-zinc-900">{stage.label}</h3>
-                </div>
-                <span className="text-xs text-zinc-400">
-                  {groupedLeads[stage.id]?.length || 0}
-                </span>
-              </div>
-              <Droppable droppableId={stage.id}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={`min-h-[400px] p-2 rounded-xl transition-colors ${
-                      snapshot.isDraggingOver ? "bg-violet-50" : "bg-zinc-50"
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      {groupedLeads[stage.id]?.map((lead, index) => (
-                        <Draggable key={lead.id} draggableId={lead.id} index={index}>
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <LeadCard lead={lead} />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-zinc-900">{stage.label}</h3>
+                    <p className="text-xs text-zinc-400">{stageLeads.length} lead{stageLeads.length !== 1 ? 's' : ''}</p>
                   </div>
+                </div>
+                {stageLeads.length > 1 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleStage(stage.id)}
+                    className="text-zinc-400 hover:text-zinc-600"
+                  >
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                  </Button>
                 )}
-              </Droppable>
+              </div>
+
+              <div className="px-4 pb-4 space-y-2">
+                <AnimatePresence initial={false}>
+                  {displayLeads.map((lead) => (
+                    <motion.div
+                      key={lead.id}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <LeadCard lead={lead} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {!isExpanded && stageLeads.length > 1 && (
+                  <button
+                    onClick={() => toggleStage(stage.id)}
+                    className="w-full text-xs text-violet-600 hover:text-violet-700 font-medium py-2 text-center"
+                  >
+                    + {stageLeads.length - 1} more lead{stageLeads.length - 1 !== 1 ? 's' : ''}
+                  </button>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
-      </DragDropContext>
+          );
+        })}
+      </div>
 
       <LeadFormDialog
         open={showForm}
