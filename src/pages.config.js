@@ -51,6 +51,8 @@ import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import Leads from './pages/Leads';
+import TimeTracking from './pages/TimeTracking';
 import __Layout from './Layout.jsx';
 
 
@@ -59,6 +61,8 @@ export const PAGES = {
     "Projects": Projects,
     "Analytics": Analytics,
     "Settings": Settings,
+    "Leads": Leads,
+    "TimeTracking": TimeTracking,
 }
 
 export const pagesConfig = {

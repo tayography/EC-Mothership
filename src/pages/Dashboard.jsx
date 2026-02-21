@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { DollarSign, Users, FolderKanban, Zap } from "lucide-react";
+import { DollarSign, Users, Target, TrendingUp } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import StatCard from "../components/dashboard/StatCard";
 import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
-import ProjectCard from "../components/dashboard/ProjectCard";
+
 
 export default function Dashboard() {
-  const { data: projects = [], isLoading: loadingProjects } = useQuery({
-    queryKey: ["projects"],
-    queryFn: () => base44.entities.Project.list("-created_date", 4),
+  const { data: leads = [], isLoading: loadingLeads } = useQuery({
+    queryKey: ["leads"],
+    queryFn: () => base44.entities.Lead.list("-created_date", 4),
     initialData: [],
   });
 
@@ -28,39 +28,38 @@ export default function Dashboard() {
     initialData: [],
   });
 
+  const totalPipeline = leads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const activeLeads = leads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
+  const wonLeads = leads.filter(l => l.status === "closed_won");
+  const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+
   const statCards = [
     {
-      title: "Total Revenue",
-      value: metrics.find(m => m.category === "revenue")
-        ? `$${metrics.find(m => m.category === "revenue").value.toLocaleString()}`
-        : "$0",
-      change: metrics.find(m => m.category === "revenue")?.previous_value
-        ? (((metrics.find(m => m.category === "revenue").value - metrics.find(m => m.category === "revenue").previous_value) / metrics.find(m => m.category === "revenue").previous_value) * 100).toFixed(1)
-        : 0,
+      title: "Pipeline Value",
+      value: `$${totalPipeline.toLocaleString()}`,
+      change: 18.5,
       icon: DollarSign,
       color: "violet",
     },
     {
-      title: "Active Users",
-      value: metrics.find(m => m.category === "users")?.value?.toLocaleString() || "0",
-      change: 12.5,
-      icon: Users,
+      title: "Active Leads",
+      value: activeLeads.length.toString(),
+      change: 12.3,
+      icon: Target,
       color: "sky",
     },
     {
-      title: "Active Projects",
-      value: projects.length.toString(),
+      title: "Closed Won",
+      value: wonLeads.length.toString(),
       change: 8.2,
-      icon: FolderKanban,
+      icon: TrendingUp,
       color: "emerald",
     },
     {
-      title: "Performance",
-      value: metrics.find(m => m.category === "performance")?.value
-        ? `${metrics.find(m => m.category === "performance").value}%`
-        : "98.5%",
-      change: 2.1,
-      icon: Zap,
+      title: "Won Value",
+      value: `$${wonValue.toLocaleString()}`,
+      change: 15.7,
+      icon: DollarSign,
       color: "amber",
     },
   ];
@@ -90,26 +89,36 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Projects */}
+      {/* Recent Leads */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-zinc-900">Recent Projects</h3>
-          <a href="/Projects" className="text-xs text-violet-600 hover:text-violet-700 font-medium transition-colors">
-            View all →
+          <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
+          <a href="/Leads" className="text-xs text-violet-600 hover:text-violet-700 font-medium transition-colors">
+            View pipeline →
           </a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {loadingProjects
+          {loadingLeads
             ? Array(4).fill(0).map((_, i) => (
                 <div key={i} className="bg-white border border-zinc-200/60 rounded-2xl p-5 animate-pulse">
-                  <div className="h-5 bg-zinc-100 rounded w-16 mb-3" />
-                  <div className="h-4 bg-zinc-100 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-zinc-50 rounded w-full mb-4" />
-                  <div className="h-1.5 bg-zinc-100 rounded-full" />
+                  <div className="h-4 bg-zinc-100 rounded w-3/4 mb-3" />
+                  <div className="h-3 bg-zinc-50 rounded w-full mb-2" />
+                  <div className="h-3 bg-zinc-50 rounded w-2/3" />
                 </div>
               ))
-            : projects.map((project, i) => (
-                <ProjectCard key={project.id} project={project} index={i} />
+            : leads.map((lead, i) => (
+                <div
+                  key={lead.id}
+                  className="bg-white border border-zinc-200/60 rounded-2xl p-4 hover:shadow-lg transition-all"
+                >
+                  <h4 className="font-semibold text-sm text-zinc-900 mb-2">{lead.business_name}</h4>
+                  <div className="flex items-center justify-between text-xs text-zinc-500">
+                    <span className="capitalize">{lead.status.replace(/_/g, " ")}</span>
+                    {lead.project_price > 0 && (
+                      <span className="text-emerald-600 font-medium">${lead.project_price.toLocaleString()}</span>
+                    )}
+                  </div>
+                </div>
               ))
           }
         </div>
