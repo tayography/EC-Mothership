@@ -39,10 +39,34 @@ export default function Dashboard() {
     initialData: [],
   });
 
+  // Calculate current metrics
   const totalPipeline = leads.reduce((sum, l) => sum + (l.project_price || 0), 0);
   const activeLeads = leads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
   const wonLeads = leads.filter(l => l.status === "closed_won");
   const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+
+  // Calculate 30-day growth
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const recentLeads = leads.filter(l => new Date(l.created_date) > thirtyDaysAgo);
+  const oldLeads = leads.filter(l => new Date(l.created_date) <= thirtyDaysAgo);
+
+  const recentPipeline = recentLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const oldPipeline = oldLeads.reduce((sum, l) => sum + (l.project_price || 0), 0) || 1;
+  const pipelineGrowth = ((recentPipeline / oldPipeline) * 100);
+
+  const recentActive = recentLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status)).length;
+  const oldActive = oldLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status)).length || 1;
+  const activeGrowth = ((recentActive / oldActive) * 100);
+
+  const recentWon = recentLeads.filter(l => l.status === "closed_won").length;
+  const oldWon = oldLeads.filter(l => l.status === "closed_won").length || 1;
+  const wonGrowth = ((recentWon / oldWon) * 100);
+
+  const recentWonValue = recentLeads.filter(l => l.status === "closed_won").reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const oldWonValue = oldLeads.filter(l => l.status === "closed_won").reduce((sum, l) => sum + (l.project_price || 0), 0) || 1;
+  const wonValueGrowth = ((recentWonValue / oldWonValue) * 100);
 
   const createTimeEntryMutation = useMutation({
     mutationFn: async (data) => {
@@ -81,28 +105,28 @@ export default function Dashboard() {
     {
       title: "Pipeline Value",
       value: `$${totalPipeline.toLocaleString()}`,
-      change: 18.5,
+      change: pipelineGrowth,
       icon: DollarSign,
       color: "violet",
     },
     {
       title: "Active Leads",
       value: activeLeads.length.toString(),
-      change: 12.3,
+      change: activeGrowth,
       icon: Target,
       color: "sky",
     },
     {
       title: "Closed Won",
       value: wonLeads.length.toString(),
-      change: 8.2,
+      change: wonGrowth,
       icon: TrendingUp,
       color: "emerald",
     },
     {
       title: "Won Value",
       value: `$${wonValue.toLocaleString()}`,
-      change: 15.7,
+      change: wonValueGrowth,
       icon: DollarSign,
       color: "amber",
     },
