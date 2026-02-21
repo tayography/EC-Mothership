@@ -30,14 +30,11 @@ const defaultLead = {
 export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onDelete, isSubmitting }) {
   const [form, setForm] = useState(defaultLead);
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => base44.entities.User.list(),
-    initialData: [],
-  });
-
-  const allowedEmails = ["taylor@theendlesscreative.com", "braden@theendlesscreative.com", "Jami.schnakenberg85@gmail.com"];
-  const users = allUsers.filter(u => allowedEmails.includes(u.email));
+  const commissionPeople = [
+    { id: "braden", name: "Braden" },
+    { id: "taylor", name: "Taylor" },
+    { id: "jami", name: "Jami Schnakenberg" }
+  ];
 
   useEffect(() => {
     if (lead) {
@@ -105,9 +102,9 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
                   <SelectValue placeholder="Select person" />
                 </SelectTrigger>
                 <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.full_name || user.email}>
-                      {user.full_name || user.email}
+                  {commissionPeople.map((person) => (
+                    <SelectItem key={person.id} value={person.name}>
+                      {person.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
