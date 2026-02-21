@@ -9,7 +9,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
+  Rocket,
   LogOut,
   Bell,
   Search,
@@ -39,18 +39,23 @@ export default function Sidebar({ currentPage }) {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-8">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-          <Sparkles className="w-5 h-5 text-white" />
+          <Rocket className="w-5 h-5 text-white" />
         </div>
         <AnimatePresence>
           {!collapsed && (
-            <motion.span
+            <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -10 }}
-              className="text-lg font-semibold tracking-tight text-zinc-900"
+              className="flex flex-col"
             >
-              Aura
-            </motion.span>
+              <span className="text-lg font-semibold tracking-tight text-zinc-900 leading-tight">
+                Endless Creative
+              </span>
+              <span className="text-[10px] text-zinc-400 font-medium tracking-wide uppercase">
+                mothership
+              </span>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
