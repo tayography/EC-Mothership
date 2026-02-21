@@ -432,5 +432,6 @@ export default function LeadProfile() {
         </div>
       </div>
     </PageTransition>
+    </>
   );
 }
