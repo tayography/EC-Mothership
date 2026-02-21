@@ -31,11 +31,14 @@ export default function LeadProfile() {
     enabled: !!leadId,
   });
 
-  const { data: users = [] } = useQuery({
+  const { data: allUsers = [] } = useQuery({
     queryKey: ["users"],
     queryFn: () => base44.entities.User.list(),
     initialData: [],
   });
+
+  const allowedEmails = ["taylor@theendlesscreative.com", "braden@theendlesscreative.com", "Jami.schnakenberg85@gmail.com"];
+  const users = allUsers.filter(u => allowedEmails.includes(u.email));
 
   const [formData, setFormData] = useState({});
 

@@ -31,11 +31,14 @@ const defaultLead = {
 export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onDelete, isSubmitting }) {
   const [form, setForm] = useState(defaultLead);
 
-  const { data: users = [] } = useQuery({
+  const { data: allUsers = [] } = useQuery({
     queryKey: ["users"],
     queryFn: () => base44.entities.User.list(),
     initialData: [],
   });
+
+  const allowedEmails = ["taylor@theendlesscreative.com", "braden@theendlesscreative.com", "Jami.schnakenberg85@gmail.com"];
+  const users = allUsers.filter(u => allowedEmails.includes(u.email));
 
   useEffect(() => {
     if (lead) {
