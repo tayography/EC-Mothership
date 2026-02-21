@@ -15,6 +15,7 @@ import {
   Search,
   User,
   Clock,
+  DollarSign,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
@@ -23,6 +24,7 @@ const navItems = [
   { name: "Leads", icon: FolderKanban, page: "Leads" },
   { name: "Time Tracking", icon: Clock, page: "TimeTracking" },
   { name: "Analytics", icon: BarChart3, page: "Analytics" },
+  { name: "Pricing", icon: DollarSign, page: "Pricing" },
   { name: "Settings", icon: Settings, page: "Settings" },
 ];
 
