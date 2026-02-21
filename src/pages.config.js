@@ -57,6 +57,7 @@ import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
 import Commissions from './pages/Commissions';
+import Payouts from './pages/Payouts';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +72,7 @@ export const PAGES = {
     "Settings": Settings,
     "TimeTracking": TimeTracking,
     "Commissions": Commissions,
+    "Payouts": Payouts,
 }
 
 export const pagesConfig = {
