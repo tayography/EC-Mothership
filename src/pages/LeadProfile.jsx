@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Phone, Mail, User, Clock, DollarSign, Save } from "lucide-react";
+import { ArrowLeft, Phone, Mail, User, Clock, DollarSign, Save, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,13 +23,18 @@ export default function LeadProfile() {
     base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
   }, []);
 
+  const { data: allLeads = [] } = useQuery({
+    queryKey: ["leads"],
+    queryFn: () => base44.entities.Lead.list("-created_date"),
+    initialData: [],
+  });
+
   const { data: lead, isLoading } = useQuery({
     queryKey: ["lead", leadId],
     queryFn: async () => {
-      const leads = await base44.entities.Lead.list();
-      return leads.find(l => l.id === leadId);
+      return allLeads.find(l => l.id === leadId);
     },
-    enabled: !!leadId,
+    enabled: !!leadId && allLeads.length > 0,
   });
 
   const commissionPeople = [
@@ -70,6 +76,7 @@ export default function LeadProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["lead", leadId] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      toast.success("Lead saved successfully");
     },
   });
 
@@ -81,6 +88,24 @@ export default function LeadProfile() {
   const handleSave = () => {
     if (!canEdit) return;
     updateMutation.mutate(formData);
+  };
+
+  // Navigation: Get leads in same stage
+  const leadsInSameStage = React.useMemo(() => {
+    if (!lead) return [];
+    return allLeads.filter(l => l.status === lead.status);
+  }, [allLeads, lead]);
+
+  const currentIndex = leadsInSameStage.findIndex(l => l.id === leadId);
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex < leadsInSameStage.length - 1;
+
+  const navigateToLead = (direction) => {
+    const newIndex = direction === 'prev' ? currentIndex - 1 : currentIndex + 1;
+    const targetLead = leadsInSameStage[newIndex];
+    if (targetLead) {
+      window.location.href = createPageUrl("LeadProfile") + `?id=${targetLead.id}`;
+    }
   };
 
   if (isLoading) {
@@ -110,15 +135,39 @@ export default function LeadProfile() {
   return (
     <PageTransition>
       <div className="mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => window.location.href = createPageUrl("Leads")}
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Leads
-        </Button>
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.location.href = createPageUrl("Leads")}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Leads
+          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateToLead('prev')}
+              disabled={!hasPrevious}
+              className="rounded-lg"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-xs text-zinc-500">
+              {currentIndex + 1} of {leadsInSameStage.length}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateToLead('next')}
+              disabled={!hasNext}
+              className="rounded-lg"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
