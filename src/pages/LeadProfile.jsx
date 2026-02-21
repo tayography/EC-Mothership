@@ -216,6 +216,22 @@ export default function LeadProfile() {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label className="text-xs text-zinc-500 mb-1.5">Dedicated EC Tech</Label>
+                <Select
+                  value={formData.ec_tech || ""}
+                  onValueChange={(value) => handleChange("ec_tech", value)}
+                  disabled={!canEdit}
+                >
+                  <SelectTrigger disabled={!canEdit}>
+                    <SelectValue placeholder="Select tech" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Braden">Braden</SelectItem>
+                    <SelectItem value="Taylor">Taylor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 

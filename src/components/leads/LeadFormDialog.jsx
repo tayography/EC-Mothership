@@ -15,6 +15,7 @@ const defaultLead = {
   phone: "",
   contact_person: "",
   ec_rep: "",
+  ec_tech: "",
   has_website: false,
   needs_new_website: false,
   needs_ad_services: false,
@@ -108,6 +109,19 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div>
+            <Label className="text-xs text-zinc-500 mb-1.5 block">Dedicated EC Tech</Label>
+            <Select value={form.ec_tech} onValueChange={(v) => handleChange("ec_tech", v)}>
+              <SelectTrigger className="rounded-xl border-zinc-200/60">
+                <SelectValue placeholder="Select tech" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Braden">Braden</SelectItem>
+                <SelectItem value="Taylor">Taylor</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
