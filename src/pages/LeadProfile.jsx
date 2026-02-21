@@ -92,14 +92,42 @@ export default function LeadProfile() {
             </h1>
             <p className="text-sm text-zinc-400 mt-1">Lead Profile</p>
           </div>
-          <Button
-            onClick={handleSave}
-            disabled={updateMutation.isPending}
-            className="bg-violet-600 hover:bg-violet-700"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {updateMutation.isPending ? "Saving..." : "Save Changes"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSave}
+              disabled={updateMutation.isPending}
+              className="bg-violet-600 hover:bg-violet-700"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {updateMutation.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+            {lead.status !== "closed_won" && lead.status !== "closed_lost" && (
+              <>
+                <Button
+                  onClick={() => {
+                    handleChange("status", "closed_won");
+                    updateMutation.mutate({ ...formData, status: "closed_won" });
+                  }}
+                  disabled={updateMutation.isPending}
+                  variant="outline"
+                  className="border-green-600 text-green-600 hover:bg-green-50"
+                >
+                  Mark Won
+                </Button>
+                <Button
+                  onClick={() => {
+                    handleChange("status", "closed_lost");
+                    updateMutation.mutate({ ...formData, status: "closed_lost" });
+                  }}
+                  disabled={updateMutation.isPending}
+                  variant="outline"
+                  className="border-red-600 text-red-600 hover:bg-red-50"
+                >
+                  Mark Lost
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 

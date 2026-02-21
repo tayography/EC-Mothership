@@ -41,17 +41,17 @@ export default function Dashboard() {
   });
 
   // Calculate current metrics
-  const totalPipeline = leads.reduce((sum, l) => sum + (l.project_price || 0), 0);
-  const activeLeads = leads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
-  const wonLeads = leads.filter(l => l.status === "closed_won");
+  const activeLeads = allLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
+  const totalPipeline = activeLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const wonLeads = allLeads.filter(l => l.status === "closed_won");
   const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
 
   // Calculate 30-day growth
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const recentLeads = leads.filter(l => new Date(l.created_date) > thirtyDaysAgo);
-  const oldLeads = leads.filter(l => new Date(l.created_date) <= thirtyDaysAgo);
+  const recentLeads = allLeads.filter(l => new Date(l.created_date) > thirtyDaysAgo);
+  const oldLeads = allLeads.filter(l => new Date(l.created_date) <= thirtyDaysAgo);
 
   const recentPipeline = recentLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
   const oldPipeline = oldLeads.reduce((sum, l) => sum + (l.project_price || 0), 0) || 1;

@@ -101,9 +101,9 @@ export default function Leads() {
     updateLeadMutation.mutate({ id: leadId, data });
   };
 
-  // Separate leads: uncalled leads vs pipeline leads
-  const leadsToCall = leads.filter(l => !l.called || (l.called && !l.interested));
-  const pipelineLeads = leads.filter(l => l.called && l.interested);
+  // Separate leads: uncalled leads vs pipeline leads (exclude closed_lost)
+  const leadsToCall = leads.filter(l => l.status !== "closed_lost" && (!l.called || (l.called && !l.interested)));
+  const pipelineLeads = leads.filter(l => l.status !== "closed_lost" && l.called && l.interested);
 
   const groupedLeads = stages.reduce((acc, stage) => {
     if (stage.id === "closed") {
