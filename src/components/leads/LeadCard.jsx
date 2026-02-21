@@ -24,6 +24,12 @@ export default function LeadCard({ lead, onClick }) {
             {lead.contact_person}
           </div>
         )}
+        {lead.ec_rep && (
+          <div className="flex items-center gap-1.5">
+            <User className="w-3 h-3" />
+            EC Rep: {lead.ec_rep}
+          </div>
+        )}
         {lead.phone && (
           <div className="flex items-center gap-1.5">
             <Phone className="w-3 h-3" />

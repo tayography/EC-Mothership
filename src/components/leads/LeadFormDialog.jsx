@@ -12,6 +12,7 @@ const defaultLead = {
   business_name: "",
   phone: "",
   contact_person: "",
+  ec_rep: "",
   has_website: false,
   needs_new_website: false,
   needs_ad_services: false,
@@ -84,6 +85,18 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
                 className="rounded-xl border-zinc-200/60"
               />
             </div>
+            <div>
+              <Label className="text-xs text-zinc-500 mb-1.5 block">EC Rep</Label>
+              <Input
+                value={form.ec_rep}
+                onChange={(e) => handleChange("ec_rep", e.target.value)}
+                placeholder="Representative name"
+                className="rounded-xl border-zinc-200/60"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs text-zinc-500 mb-1.5 block">Project Price ($)</Label>
               <Input
