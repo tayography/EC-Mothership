@@ -49,26 +49,28 @@
  */
 import Analytics from './pages/Analytics';
 import Dashboard from './pages/Dashboard';
+import LeadHistory from './pages/LeadHistory';
+import LeadProfile from './pages/LeadProfile';
 import Leads from './pages/Leads';
+import Pricing from './pages/Pricing';
 import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
-import LeadProfile from './pages/LeadProfile';
-import LeadHistory from './pages/LeadHistory';
-import Pricing from './pages/Pricing';
+import Commissions from './pages/Commissions';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Analytics": Analytics,
     "Dashboard": Dashboard,
+    "LeadHistory": LeadHistory,
+    "LeadProfile": LeadProfile,
     "Leads": Leads,
+    "Pricing": Pricing,
     "Projects": Projects,
     "Settings": Settings,
     "TimeTracking": TimeTracking,
-    "LeadProfile": LeadProfile,
-    "LeadHistory": LeadHistory,
-    "Pricing": Pricing,
+    "Commissions": Commissions,
 }
 
 export const pagesConfig = {

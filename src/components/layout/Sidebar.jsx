@@ -25,6 +25,7 @@ const navItems = [
   { name: "Time Tracking", icon: Clock, page: "TimeTracking" },
   { name: "Analytics", icon: BarChart3, page: "Analytics" },
   { name: "Pricing", icon: DollarSign, page: "Pricing" },
+  { name: "Commissions", icon: DollarSign, page: "Commissions" },
   { name: "Settings", icon: Settings, page: "Settings" },
 ];
 
