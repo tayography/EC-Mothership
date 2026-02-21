@@ -34,6 +34,12 @@ export default function Analytics() {
     initialData: [],
   });
 
+  const { data: timeEntries = [] } = useQuery({
+    queryKey: ["timeEntries"],
+    queryFn: () => base44.entities.TimeEntry.list(),
+    initialData: [],
+  });
+
   // Calculate lead metrics
   const totalLeads = leads.length;
   const newLeads = leads.filter(l => l.status === "new").length;
@@ -78,6 +84,20 @@ export default function Analytics() {
       revenue: l.project_price || 0,
       hours: l.total_hours || 0,
     }));
+
+  // Time by EC Rep
+  const timeByRep = timeEntries
+    .filter(e => e.clock_out && e.duration_minutes)
+    .reduce((acc, entry) => {
+      const rep = entry.user_email?.split('@')[0] || 'Unknown';
+      if (!acc[rep]) acc[rep] = 0;
+      acc[rep] += entry.duration_minutes / 60;
+      return acc;
+    }, {});
+
+  const repTimeData = Object.entries(timeByRep)
+    .map(([name, hours]) => ({ name, hours: parseFloat(hours.toFixed(2)) }))
+    .sort((a, b) => b.hours - a.hours);
 
   const stats = [
     { title: "Total Leads", value: totalLeads.toString(), change: newLeads, icon: TrendingUp, color: "violet" },
@@ -231,6 +251,38 @@ export default function Analytics() {
           </div>
         </motion.div>
       </div>
+
+      {/* EC Rep Performance */}
+      <div className="mb-4">
+        <h2 className="text-sm font-semibold text-zinc-900 mb-3">EC Rep Performance</h2>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="bg-white border border-zinc-200/60 rounded-2xl p-6 mb-6"
+      >
+        <h3 className="text-sm font-semibold text-zinc-900 mb-1">Time Tracked by EC Rep</h3>
+        <p className="text-xs text-zinc-400 mb-6">Total hours logged per representative</p>
+        <div className="h-64">
+          {repTimeData.length > 0 ? (
+            <ResponsiveContainer>
+              <BarChart data={repTimeData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#a1a1aa" }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#a1a1aa" }} />
+                <Tooltip content={<ChartTooltip />} />
+                <Bar dataKey="hours" fill="#8b5cf6" radius={[6, 6, 0, 0]} name="Hours" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center text-zinc-400 text-sm">
+              No time tracked yet
+            </div>
+          )}
+        </div>
+      </motion.div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

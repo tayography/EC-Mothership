@@ -18,6 +18,12 @@ export default function LeadCard({ lead, onClick }) {
       </h3>
       
       <div className="space-y-1.5 text-xs text-zinc-500">
+        {lead.created_by && (
+          <div className="flex items-center gap-1.5 text-violet-600">
+            <User className="w-3 h-3" />
+            {lead.created_by.split('@')[0]}
+          </div>
+        )}
         {lead.contact_person && (
           <div className="flex items-center gap-1.5">
             <User className="w-3 h-3" />

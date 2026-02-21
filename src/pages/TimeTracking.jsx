@@ -30,8 +30,17 @@ export default function TimeTracking() {
     initialData: [],
   });
 
-  const userEntries = timeEntries.filter(e => e.user_email === user?.email && e.clock_out);
+  const allCompletedEntries = timeEntries.filter(e => e.clock_out);
+  const userEntries = allCompletedEntries.filter(e => e.user_email === user?.email);
   const totalHours = userEntries.reduce((sum, e) => sum + (e.duration_minutes || 0), 0) / 60;
+
+  // Group entries by user
+  const entriesByUser = allCompletedEntries.reduce((acc, entry) => {
+    const email = entry.user_email || 'Unknown';
+    if (!acc[email]) acc[email] = [];
+    acc[email].push(entry);
+    return acc;
+  }, {});
 
   const updateTimeEntryMutation = useMutation({
     mutationFn: async (data) => {
@@ -103,20 +112,20 @@ export default function TimeTracking() {
 
   return (
     <PageTransition>
-      <TopBar title="Time Tracking" subtitle="Track your time on leads" />
+      <TopBar title="Time Tracking" subtitle="Track time across all EC Reps" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <TimeTracker leads={leads} user={user} />
 
         <div className="lg:col-span-2 bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-zinc-900 mb-4">Your Recent Time Entries</h3>
+          <h3 className="text-sm font-semibold text-zinc-900 mb-4">All Time Entries</h3>
           <div className="space-y-2">
             {isLoading ? (
               <div className="text-sm text-zinc-400 text-center py-8">Loading...</div>
-            ) : userEntries.length === 0 ? (
+            ) : allCompletedEntries.length === 0 ? (
               <div className="text-sm text-zinc-400 text-center py-8">No time entries yet</div>
             ) : (
-              userEntries.map((entry) => {
+              allCompletedEntries.map((entry) => {
                 const lead = leads.find(l => l.id === entry.lead_id);
                 return (
                   <div key={entry.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-50 transition-colors group">
@@ -127,6 +136,9 @@ export default function TimeTracking() {
                       <div>
                         <p className="text-sm font-medium text-zinc-900">
                           {lead?.business_name || "General Time"}
+                        </p>
+                        <p className="text-xs text-violet-600 font-medium">
+                          {entry.user_email?.split('@')[0] || 'Unknown'}
                         </p>
                         {entry.notes && (
                           <p className="text-xs text-zinc-400">{entry.notes}</p>
