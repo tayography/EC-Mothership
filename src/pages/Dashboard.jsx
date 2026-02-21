@@ -159,7 +159,41 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Chart - spans 2 cols */}
         <div className="lg:col-span-2">
-          <ChartCard title="Revenue Overview" subtitle="Monthly recurring revenue" />
+          <ChartCard title="Revenue Overview" subtitle="Closed won revenue by day" data={(() => {
+            // Start from Feb 1, 2026 at $0
+            const startDate = new Date('2026-02-01');
+            const today = new Date();
+            const dailyRevenue = {};
+            
+            // Initialize all days from Feb 1 to today with $0
+            for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+              const dateKey = d.toISOString().split('T')[0];
+              dailyRevenue[dateKey] = 0;
+            }
+            
+            // Add revenue from closed won leads based on their created date
+            leads
+              .filter(l => l.status === "closed_won" && l.project_price > 0)
+              .forEach(lead => {
+                const leadDate = new Date(lead.created_date).toISOString().split('T')[0];
+                if (dailyRevenue.hasOwnProperty(leadDate)) {
+                  dailyRevenue[leadDate] += lead.project_price;
+                }
+              });
+            
+            // Calculate cumulative revenue and format for chart
+            let cumulative = 0;
+            return Object.entries(dailyRevenue)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([date, revenue]) => {
+                cumulative += revenue;
+                const d = new Date(date);
+                return {
+                  name: `${d.getMonth() + 1}/${d.getDate()}`,
+                  value: cumulative
+                };
+              });
+          })()} />
         </div>
 
         {/* Activity Feed */}

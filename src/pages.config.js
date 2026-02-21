@@ -47,21 +47,21 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Dashboard from './pages/Dashboard';
-import Projects from './pages/Projects';
 import Analytics from './pages/Analytics';
-import Settings from './pages/Settings';
+import Dashboard from './pages/Dashboard';
 import Leads from './pages/Leads';
+import Projects from './pages/Projects';
+import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Dashboard": Dashboard,
-    "Projects": Projects,
     "Analytics": Analytics,
-    "Settings": Settings,
+    "Dashboard": Dashboard,
     "Leads": Leads,
+    "Projects": Projects,
+    "Settings": Settings,
     "TimeTracking": TimeTracking,
 }
 
