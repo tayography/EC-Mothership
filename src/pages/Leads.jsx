@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Plus, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import LeadCard from "../components/leads/LeadCard";
 import LeadFormDialog from "../components/leads/LeadFormDialog";
+import LeadsToCall from "../components/leads/LeadsToCall";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const stages = [
@@ -58,6 +59,13 @@ export default function Leads() {
     },
   });
 
+  const updateLeadMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Lead.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+    },
+  });
+
   const handleSubmit = (data) => {
     if (editingLead) {
       updateMutation.mutate({ id: editingLead.id, data });
@@ -89,11 +97,19 @@ export default function Leads() {
     });
   };
 
+  const handleCallUpdate = (leadId, data) => {
+    updateLeadMutation.mutate({ id: leadId, data });
+  };
+
+  // Separate leads: uncalled leads vs pipeline leads
+  const leadsToCall = leads.filter(l => !l.called || (l.called && !l.interested));
+  const pipelineLeads = leads.filter(l => l.called && l.interested);
+
   const groupedLeads = stages.reduce((acc, stage) => {
     if (stage.id === "closed") {
-      acc[stage.id] = leads.filter((l) => l.status === "closed_won" || l.status === "closed_lost");
+      acc[stage.id] = pipelineLeads.filter((l) => l.status === "closed_won" || l.status === "closed_lost");
     } else {
-      acc[stage.id] = leads.filter((l) => l.status === stage.id);
+      acc[stage.id] = pipelineLeads.filter((l) => l.status === stage.id);
     }
     return acc;
   }, {});
@@ -117,6 +133,26 @@ export default function Leads() {
           New Lead
         </Button>
       </div>
+
+      {/* Leads to Call Section */}
+      {leadsToCall.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Phone className="w-5 h-5 text-violet-600" />
+            <h2 className="text-lg font-semibold text-zinc-900">Leads to Call</h2>
+            <span className="text-sm text-zinc-400">({leadsToCall.length})</span>
+          </div>
+          <LeadsToCall leads={leadsToCall} onUpdate={handleCallUpdate} />
+        </div>
+      )}
+
+      {/* Pipeline Section */}
+      {pipelineLeads.length > 0 && (
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-zinc-900">Pipeline</h2>
+          <p className="text-sm text-zinc-400">Leads that have been called and are interested</p>
+        </div>
+      )}
 
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
@@ -149,10 +185,7 @@ export default function Leads() {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                             >
-                              <LeadCard
-                                lead={lead}
-                                onClick={() => { setEditingLead(lead); setShowForm(true); }}
-                              />
+                              <LeadCard lead={lead} />
                             </div>
                           )}
                         </Draggable>

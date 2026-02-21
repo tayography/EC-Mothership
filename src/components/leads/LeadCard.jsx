@@ -2,15 +2,24 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Phone, Clock, DollarSign, User, Calendar } from "lucide-react";
 import { format } from "date-fns";
+import { createPageUrl } from "@/utils";
 
 export default function LeadCard({ lead, onClick }) {
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(lead);
+    } else {
+      window.location.href = createPageUrl("LeadProfile") + `?id=${lead.id}`;
+    }
+  };
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      onClick={onClick}
+      onClick={handleClick}
       className="bg-white border border-zinc-200/60 rounded-xl p-4 hover:shadow-lg hover:border-zinc-300 transition-all cursor-pointer group"
     >
       <h3 className="font-semibold text-sm text-zinc-900 mb-2 group-hover:text-violet-600 transition-colors">
