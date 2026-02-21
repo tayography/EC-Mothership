@@ -6,15 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Bell, Shield, Palette, Save, Loader2, Check } from "lucide-react";
+import { User, Bell, Shield, Palette, Save, Loader2, Check, History } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
+import { createPageUrl } from "@/utils";
 
 const sections = [
   { id: "profile", label: "Profile", icon: User },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "security", label: "Security", icon: Shield },
   { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "leads", label: "Lead History", icon: History },
 ];
 
 export default function Settings() {
@@ -175,6 +177,23 @@ export default function Settings() {
                     ))}
                   </div>
                 </div>
+              </div>
+            )}
+
+            {activeSection === "leads" && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-900">Lead History</h3>
+                  <p className="text-xs text-zinc-400 mt-0.5">View and manage your lead history</p>
+                </div>
+                <Separator className="bg-zinc-100" />
+                <Button
+                  onClick={() => window.location.href = createPageUrl("LeadHistory")}
+                  className="w-full bg-violet-600 hover:bg-violet-700 rounded-xl"
+                >
+                  <History className="w-4 h-4 mr-2" />
+                  View Lead History
+                </Button>
               </div>
             )}
 
