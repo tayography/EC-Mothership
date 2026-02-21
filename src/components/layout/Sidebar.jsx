@@ -16,22 +16,35 @@ import {
   User,
   Clock,
   DollarSign,
+  Wallet,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
-const navItems = [
+const allNavItems = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
   { name: "Leads", icon: FolderKanban, page: "Leads" },
   { name: "Time Tracking", icon: Clock, page: "TimeTracking" },
   { name: "Analytics", icon: BarChart3, page: "Analytics" },
   { name: "Pricing", icon: DollarSign, page: "Pricing" },
-  { name: "Commissions", icon: DollarSign, page: "Commissions" },
+  { name: "Commissions", icon: DollarSign, page: "Commissions", restrictedTo: ["Braden", "Taylor"] },
+  { name: "Payouts", icon: Wallet, page: "Payouts", restrictedTo: ["Braden", "Taylor"] },
   { name: "Settings", icon: Settings, page: "Settings" },
 ];
 
 export default function Sidebar({ currentPage }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  React.useEffect(() => {
+    base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
+  }, []);
+
+  const navItems = allNavItems.filter(item => {
+    if (!item.restrictedTo) return true;
+    if (!currentUser) return false;
+    return item.restrictedTo.includes(currentUser.full_name);
+  });
 
   const handleLogout = () => {
     base44.auth.logout();
