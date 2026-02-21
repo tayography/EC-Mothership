@@ -169,6 +169,7 @@ export default function Dashboard() {
             onPeriodChange={setRevenuePeriod}
             data={(() => {
               const today = new Date();
+              const businessStartDate = new Date('2026-02-01');
               let startDate;
               let dateFormat;
               
@@ -178,37 +179,49 @@ export default function Dashboard() {
                 dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
               } else if (revenuePeriod === "1M") {
                 startDate = new Date(today);
-                startDate.setMonth(startDate.getMonth() - 1);
+                startDate.setDate(startDate.getDate() - 30);
                 dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
               } else if (revenuePeriod === "1Y") {
                 startDate = new Date(today);
-                startDate.setFullYear(startDate.getFullYear() - 1);
-                dateFormat = (d) => `${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}`;
+                startDate.setDate(startDate.getDate() - 365);
+                dateFormat = (d) => `${d.toLocaleString('default', { month: 'short' })}`;
               }
+              
+              // Use the later date between business start and selected period
+              const effectiveStartDate = startDate < businessStartDate ? businessStartDate : startDate;
               
               const dailyRevenue = {};
               
-              // Initialize all days with $0
-              for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+              // Initialize all days from effective start to today with $0
+              for (let d = new Date(effectiveStartDate); d <= today; d.setDate(d.getDate() + 1)) {
                 const dateKey = d.toISOString().split('T')[0];
                 dailyRevenue[dateKey] = 0;
               }
               
-              // Add revenue from closed won leads
+              // Calculate cumulative revenue up to start of period
+              let cumulativeBeforePeriod = 0;
               allLeads
                 .filter(l => l.status === "closed_won" && l.project_price > 0)
                 .forEach(lead => {
                   const leadDate = new Date(lead.updated_date || lead.created_date);
-                  if (leadDate >= startDate && leadDate <= today) {
-                    const dateKey = leadDate.toISOString().split('T')[0];
-                    if (dailyRevenue.hasOwnProperty(dateKey)) {
-                      dailyRevenue[dateKey] += lead.project_price;
-                    }
+                  if (leadDate >= businessStartDate && leadDate < effectiveStartDate) {
+                    cumulativeBeforePeriod += lead.project_price;
                   }
                 });
               
-              // Calculate cumulative revenue
-              let cumulative = 0;
+              // Add revenue from closed won leads within the period
+              allLeads
+                .filter(l => l.status === "closed_won" && l.project_price > 0)
+                .forEach(lead => {
+                  const leadDate = new Date(lead.updated_date || lead.created_date);
+                  const dateKey = leadDate.toISOString().split('T')[0];
+                  if (dailyRevenue.hasOwnProperty(dateKey)) {
+                    dailyRevenue[dateKey] += lead.project_price;
+                  }
+                });
+              
+              // Calculate cumulative revenue starting from pre-period total
+              let cumulative = cumulativeBeforePeriod;
               const allDates = Object.keys(dailyRevenue).sort();
               
               return allDates.map(date => {
