@@ -119,10 +119,11 @@ export default function LeadProfile() {
             <div className="h-4 bg-zinc-100 rounded w-full" />
             <div className="h-4 bg-zinc-100 rounded w-3/4" />
           </div>
-        </div>
-      </PageTransition>
-    );
-  }
+          </div>
+          </PageTransition>
+          </>
+          );
+          }
 
   if (!lead) {
     return (
