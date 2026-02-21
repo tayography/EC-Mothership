@@ -159,41 +159,74 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         {/* Chart - spans 2 cols */}
         <div className="lg:col-span-2">
-          <ChartCard title="Revenue Overview" subtitle="Closed won revenue by day" data={(() => {
-            // Start from Feb 1, 2026 at $0
-            const startDate = new Date('2026-02-01');
-            const today = new Date();
-            const dailyRevenue = {};
-            
-            // Initialize all days from Feb 1 to today with $0
-            for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
-              const dateKey = d.toISOString().split('T')[0];
-              dailyRevenue[dateKey] = 0;
-            }
-            
-            // Add revenue from closed won leads based on their created date
-            leads
-              .filter(l => l.status === "closed_won" && l.project_price > 0)
-              .forEach(lead => {
-                const leadDate = new Date(lead.created_date).toISOString().split('T')[0];
-                if (dailyRevenue.hasOwnProperty(leadDate)) {
-                  dailyRevenue[leadDate] += lead.project_price;
-                }
-              });
-            
-            // Calculate cumulative revenue and format for chart
-            let cumulative = 0;
-            return Object.entries(dailyRevenue)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([date, revenue]) => {
-                cumulative += revenue;
+          <ChartCard 
+            title="Revenue Overview" 
+            subtitle="Closed won revenue by day"
+            selectedPeriod={revenuePeriod}
+            onPeriodChange={setRevenuePeriod}
+            data={(() => {
+              // Start from Feb 1, 2026 at $0
+              const startDate = new Date('2026-02-01');
+              const today = new Date();
+              
+              // Determine filter date based on period
+              let filterDate = new Date(startDate);
+              if (revenuePeriod === "7D") {
+                filterDate = new Date(today);
+                filterDate.setDate(filterDate.getDate() - 7);
+              } else if (revenuePeriod === "1M") {
+                filterDate = new Date(today);
+                filterDate.setMonth(filterDate.getMonth() - 1);
+              } else if (revenuePeriod === "1Y") {
+                filterDate = new Date(today);
+                filterDate.setFullYear(filterDate.getFullYear() - 1);
+              }
+              
+              // Use the later of startDate or filterDate
+              const effectiveStart = filterDate > startDate ? filterDate : startDate;
+              
+              const dailyRevenue = {};
+              
+              // Initialize all days from effective start to today with $0
+              for (let d = new Date(effectiveStart); d <= today; d.setDate(d.getDate() + 1)) {
+                const dateKey = d.toISOString().split('T')[0];
+                dailyRevenue[dateKey] = 0;
+              }
+              
+              // Add revenue from closed won leads based on their created date
+              leads
+                .filter(l => l.status === "closed_won" && l.project_price > 0)
+                .forEach(lead => {
+                  const leadDate = new Date(lead.created_date).toISOString().split('T')[0];
+                  if (dailyRevenue.hasOwnProperty(leadDate)) {
+                    dailyRevenue[leadDate] += lead.project_price;
+                  }
+                });
+              
+              // Calculate cumulative revenue from Feb 1st
+              let cumulative = 0;
+              const allDates = Object.keys(dailyRevenue).sort();
+              
+              // Get cumulative at start of period
+              leads
+                .filter(l => l.status === "closed_won" && l.project_price > 0)
+                .forEach(lead => {
+                  const leadDate = new Date(lead.created_date);
+                  if (leadDate < effectiveStart && leadDate >= startDate) {
+                    cumulative += lead.project_price;
+                  }
+                });
+              
+              return allDates.map(date => {
+                cumulative += dailyRevenue[date];
                 const d = new Date(date);
                 return {
                   name: `${d.getMonth() + 1}/${d.getDate()}`,
                   value: cumulative
                 };
               });
-          })()} />
+            })()} 
+          />
         </div>
 
         {/* Activity Feed */}

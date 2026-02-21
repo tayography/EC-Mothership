@@ -37,7 +37,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export default function ChartCard({ title, subtitle, data = defaultData }) {
+export default function ChartCard({ title, subtitle, data = defaultData, selectedPeriod, onPeriodChange }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -50,16 +50,23 @@ export default function ChartCard({ title, subtitle, data = defaultData }) {
           <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
           {subtitle && <p className="text-xs text-zinc-400 mt-0.5">{subtitle}</p>}
         </div>
-        <div className="flex gap-1">
-          {["7D", "1M", "1Y"].map((period) => (
-            <button
-              key={period}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors first:bg-zinc-100 first:text-zinc-700"
-            >
-              {period}
-            </button>
-          ))}
-        </div>
+        {onPeriodChange && (
+          <div className="flex gap-1">
+            {["7D", "1M", "1Y"].map((period) => (
+              <button
+                key={period}
+                onClick={() => onPeriodChange(period)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors ${
+                  selectedPeriod === period
+                    ? "bg-zinc-100 text-zinc-700"
+                    : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                }`}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="h-52">
         <ResponsiveContainer width="100%" height="100%">
