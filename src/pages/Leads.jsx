@@ -18,6 +18,7 @@ const stages = [
   { id: "soft_close", label: "Soft Close", color: "bg-emerald-100" },
   { id: "closed_won", label: "Closed Won", color: "bg-green-100" },
   { id: "closed_lost", label: "Closed Lost", color: "bg-rose-100" },
+  { id: "closed", label: "Closed", color: "bg-slate-100" },
 ];
 
 export default function Leads() {
@@ -78,7 +79,11 @@ export default function Leads() {
   };
 
   const groupedLeads = stages.reduce((acc, stage) => {
-    acc[stage.id] = leads.filter((l) => l.status === stage.id);
+    if (stage.id === "closed") {
+      acc[stage.id] = leads.filter((l) => l.status === "closed_won" || l.status === "closed_lost");
+    } else {
+      acc[stage.id] = leads.filter((l) => l.status === stage.id);
+    }
     return acc;
   }, {});
 
