@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Trash2, Loader2 } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 
 const defaultLead = {
   business_name: "",
@@ -26,6 +28,12 @@ const defaultLead = {
 
 export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onDelete, isSubmitting }) {
   const [form, setForm] = useState(defaultLead);
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
 
   useEffect(() => {
     if (lead) {
@@ -87,12 +95,18 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
             </div>
             <div>
               <Label className="text-xs text-zinc-500 mb-1.5 block">EC Rep</Label>
-              <Input
-                value={form.ec_rep}
-                onChange={(e) => handleChange("ec_rep", e.target.value)}
-                placeholder="Representative name"
-                className="rounded-xl border-zinc-200/60"
-              />
+              <Select value={form.ec_rep} onValueChange={(v) => handleChange("ec_rep", v)}>
+                <SelectTrigger className="rounded-xl border-zinc-200/60">
+                  <SelectValue placeholder="Select rep" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.full_name || user.email}>
+                      {user.full_name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

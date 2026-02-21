@@ -31,6 +31,12 @@ export default function LeadProfile() {
     enabled: !!leadId,
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   const [formData, setFormData] = useState({});
 
   React.useEffect(() => {
@@ -193,11 +199,22 @@ export default function LeadProfile() {
               </div>
               <div>
                 <Label className="text-xs text-zinc-500 mb-1.5">EC Rep</Label>
-                <Input
+                <Select
                   value={formData.ec_rep || ""}
-                  onChange={(e) => handleChange("ec_rep", e.target.value)}
+                  onValueChange={(value) => handleChange("ec_rep", value)}
                   disabled={!canEdit}
-                />
+                >
+                  <SelectTrigger disabled={!canEdit}>
+                    <SelectValue placeholder="Select rep" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.full_name || user.email}>
+                        {user.full_name || user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
