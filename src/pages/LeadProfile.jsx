@@ -51,8 +51,7 @@ export default function LeadProfile() {
   React.useEffect(() => {
     if (currentUser && lead) {
       const isAdmin = currentUser.role === 'admin';
-      const isAssignedRep = lead.ec_rep === currentUser.full_name || lead.ec_rep === currentUser.email;
-      setCanEdit(isAdmin || isAssignedRep);
+      setCanEdit(isAdmin);
     }
   }, [currentUser, lead]);
 
@@ -199,25 +198,6 @@ export default function LeadProfile() {
                   onChange={(e) => handleChange("phone", e.target.value)}
                   disabled={!canEdit}
                 />
-              </div>
-              <div>
-                <Label className="text-xs text-zinc-500 mb-1.5">EC Rep</Label>
-                <Select
-                  value={formData.ec_rep || ""}
-                  onValueChange={(value) => handleChange("ec_rep", value)}
-                  disabled={!canEdit}
-                >
-                  <SelectTrigger disabled={!canEdit}>
-                    <SelectValue placeholder="Select rep" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.full_name || user.email}>
-                        {user.full_name || user.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               <div>
                 <Label className="text-xs text-zinc-500 mb-1.5">Call Made By / Lead Provided By</Label>

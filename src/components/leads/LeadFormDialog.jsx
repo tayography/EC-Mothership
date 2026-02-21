@@ -87,31 +87,14 @@ export default function LeadFormDialog({ open, onOpenChange, lead, onSubmit, onD
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs text-zinc-500 mb-1.5 block">Phone</Label>
-              <Input
-                value={form.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                placeholder="Phone number"
-                className="rounded-xl border-zinc-200/60"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-zinc-500 mb-1.5 block">EC Rep</Label>
-              <Select value={form.ec_rep} onValueChange={(v) => handleChange("ec_rep", v)}>
-                <SelectTrigger className="rounded-xl border-zinc-200/60">
-                  <SelectValue placeholder="Select rep" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.full_name || user.email}>
-                      {user.full_name || user.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label className="text-xs text-zinc-500 mb-1.5 block">Phone</Label>
+            <Input
+              value={form.phone}
+              onChange={(e) => handleChange("phone", e.target.value)}
+              placeholder="Phone number"
+              className="rounded-xl border-zinc-200/60"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
