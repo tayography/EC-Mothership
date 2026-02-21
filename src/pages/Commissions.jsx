@@ -14,17 +14,17 @@ export default function Commissions() {
         {/* Call/Lead Commission */}
         <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0">
-              <DollarSign className="w-6 h-6 text-violet-600" />
+            <div className="bg-stone-600 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <DollarSign className="text-sky-500 lucide lucide-dollar-sign w-6 h-6" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-zinc-900 mb-2">Call Made / Lead Provided</h3>
               <p className="text-sm text-zinc-600 mb-3">
                 When a call is made or a lead is provided, the person responsible receives an immediate commission.
               </p>
-              <div className="bg-violet-50 border border-violet-200 rounded-xl p-4">
-                <p className="text-2xl font-bold text-violet-900">10%</p>
-                <p className="text-sm text-violet-700">of project price collected by company</p>
+              <div className="bg-stone-600 p-4 rounded-xl border border-violet-200">
+                <p className="text-sky-500 text-2xl font-bold">10%</p>
+                <p className="text-sky-400 text-sm">of project price collected by company</p>
               </div>
             </div>
           </div>
@@ -33,17 +33,17 @@ export default function Commissions() {
         {/* Base Commission for Braden & Taylor */}
         <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-              <User className="w-6 h-6 text-emerald-600" />
+            <div className="bg-stone-700 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <User className="text-sky-500 lucide lucide-user w-6 h-6" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-zinc-900 mb-2">Base Commission (Braden & Taylor)</h3>
               <p className="text-sm text-zinc-600 mb-3">
                 Braden and Taylor each receive a base commission on every project.
               </p>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                <p className="text-2xl font-bold text-emerald-900">45%</p>
-                <p className="text-sm text-emerald-700">of project price collected by company (each)</p>
+              <div className="bg-stone-700 p-4 rounded-xl border border-emerald-200">
+                <p className="text-sky-500 text-2xl font-bold">45%</p>
+                <p className="text-sky-500 text-sm">of project price collected by company (each)</p>
               </div>
             </div>
           </div>
@@ -52,17 +52,17 @@ export default function Commissions() {
         {/* Combined Commission */}
         <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-              <Award className="w-6 h-6 text-amber-600" />
+            <div className="bg-stone-800 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
+              <Award className="text-sky-500 lucide lucide-award w-6 h-6" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-zinc-900 mb-2">Combined Commission (Braden & Taylor)</h3>
               <p className="text-sm text-zinc-600 mb-3">
                 If Braden or Taylor makes the call or is assigned to the lead as EC Rep, they receive both commissions.
               </p>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <p className="text-2xl font-bold text-amber-900">55%</p>
-                <p className="text-sm text-amber-700">45% base + 10% call/lead commission</p>
+              <div className="bg-stone-800 p-4 rounded-xl border border-amber-200">
+                <p className="text-sky-500 text-2xl font-bold">55%</p>
+                <p className="text-sky-500 text-sm">45% base + 10% call/lead commission</p>
               </div>
             </div>
           </div>
@@ -76,6 +76,6 @@ export default function Commissions() {
           </p>
         </div>
       </div>
-    </PageTransition>
-  );
+    </PageTransition>);
+
 }
