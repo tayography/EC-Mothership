@@ -55,6 +55,7 @@ import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
 import LeadProfile from './pages/LeadProfile';
 import LeadHistory from './pages/LeadHistory';
+import Pricing from './pages/Pricing';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +68,7 @@ export const PAGES = {
     "TimeTracking": TimeTracking,
     "LeadProfile": LeadProfile,
     "LeadHistory": LeadHistory,
+    "Pricing": Pricing,
 }
 
 export const pagesConfig = {
