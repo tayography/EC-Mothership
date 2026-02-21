@@ -142,15 +142,20 @@ export default function Dashboard() {
     },
   ];
 
-  // Calculate leaderboard
-  const leaderboard = users.map(user => {
+  // Calculate leaderboard - only track Braden, Taylor, and Jami
+  const peopleMap = {
+    "Braden": "braden@theendlesscreative.com",
+    "Taylor": "taylor@theendlesscreative.com",
+    "Jami": "Jami.schnakenberg85@gmail.com"
+  };
+
+  const leaderboard = ["Braden", "Taylor", "Jami"].map(name => {
     const userWonLeads = allLeads.filter(l => 
-      l.status === "closed_won" && 
-      (l.ec_rep === user.full_name || l.ec_rep === user.email)
+      l.status === "closed_won" && l.created_by === peopleMap[name]
     );
     return {
-      name: user.full_name || user.email,
-      email: user.email,
+      name,
+      email: peopleMap[name],
       wins: userWonLeads.length,
       revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0)
     };
