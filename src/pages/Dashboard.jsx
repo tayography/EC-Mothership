@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
-import { DollarSign, Users, Target, TrendingUp } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { DollarSign, Users, Target, TrendingUp, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import StatCard from "../components/dashboard/StatCard";
 import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
+import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
 
 
 export default function Dashboard() {
+  const [showTimeDialog, setShowTimeDialog] = useState(false);
+  const queryClient = useQueryClient();
+
   const { data: leads = [], isLoading: loadingLeads } = useQuery({
     queryKey: ["leads"],
     queryFn: () => base44.entities.Lead.list("-created_date", 4),
+    initialData: [],
+  });
+
+  const { data: allLeads = [] } = useQuery({
+    queryKey: ["all-leads"],
+    queryFn: () => base44.entities.Lead.list(),
     initialData: [],
   });
 
@@ -32,6 +43,39 @@ export default function Dashboard() {
   const activeLeads = leads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
   const wonLeads = leads.filter(l => l.status === "closed_won");
   const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+
+  const createTimeEntryMutation = useMutation({
+    mutationFn: async (data) => {
+      const { lead_id, date, start_time, end_time, duration_minutes, notes } = data;
+      
+      const clockIn = new Date(`${date}T${start_time}`).toISOString();
+      const clockOut = new Date(`${date}T${end_time}`).toISOString();
+      
+      const user = await base44.auth.me();
+      
+      const timeEntry = await base44.entities.TimeEntry.create({
+        lead_id,
+        user_email: user.email,
+        clock_in: clockIn,
+        clock_out: clockOut,
+        duration_minutes,
+        notes,
+      });
+
+      const lead = allLeads.find(l => l.id === lead_id);
+      if (lead) {
+        const newTotalHours = (lead.total_hours || 0) + (duration_minutes / 60);
+        await base44.entities.Lead.update(lead_id, { total_hours: newTotalHours });
+      }
+
+      return timeEntry;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["all-leads"] });
+      setShowTimeDialog(false);
+    },
+  });
 
   const statCards = [
     {
@@ -66,7 +110,19 @@ export default function Dashboard() {
 
   return (
     <PageTransition>
-      <TopBar title="Dashboard" subtitle="Welcome back, here's your overview" />
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Dashboard</h1>
+          <p className="text-sm text-zinc-400 mt-1">Welcome back, here's your overview</p>
+        </div>
+        <Button 
+          onClick={() => setShowTimeDialog(true)}
+          className="bg-violet-600 hover:bg-violet-700 rounded-xl shadow-lg shadow-violet-600/20"
+        >
+          <Clock className="w-4 h-4 mr-2" />
+          Enter Time
+        </Button>
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -123,6 +179,14 @@ export default function Dashboard() {
           }
         </div>
       </div>
+
+      <ManualTimeEntryDialog
+        open={showTimeDialog}
+        onOpenChange={setShowTimeDialog}
+        leads={allLeads}
+        onSubmit={(data) => createTimeEntryMutation.mutate(data)}
+        isSubmitting={createTimeEntryMutation.isPending}
+      />
     </PageTransition>
   );
 }
