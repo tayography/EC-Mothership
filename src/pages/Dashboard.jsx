@@ -9,6 +9,7 @@ import StatCard from "../components/dashboard/StatCard";
 import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
 import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
+import FollowUpCalendar from "../components/dashboard/FollowUpCalendar";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 
@@ -295,78 +296,8 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Recent Leads Widget */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
-            <Button
-              onClick={() => window.location.href = createPageUrl("Leads")}
-              size="sm"
-              className="bg-violet-600 hover:bg-violet-700 h-7 text-xs rounded-lg"
-            >
-              <Plus className="w-3 h-3 mr-1" />
-              New Lead
-            </Button>
-          </div>
-          <div className="space-y-2">
-            {leads.slice(0, 5).map((lead) => (
-              <div
-                key={lead.id}
-                onClick={() => window.location.href = createPageUrl("LeadProfile") + `?id=${lead.id}`}
-                className="p-3 rounded-xl hover:bg-zinc-50 cursor-pointer transition-colors border border-zinc-100"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-zinc-900 truncate">{lead.business_name}</p>
-                    <p className="text-xs text-zinc-400 mt-0.5">
-                      {format(new Date(lead.created_date), 'MMM d, h:mm a')}
-                    </p>
-                  </div>
-                  {lead.project_price > 0 && (
-                    <span className="text-xs font-semibold text-emerald-600 ml-2">
-                      ${lead.project_price.toLocaleString()}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Leads */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
-          <a href="/Leads" className="text-xs text-violet-600 hover:text-violet-700 font-medium transition-colors">
-            View pipeline →
-          </a>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {loadingLeads
-            ? Array(4).fill(0).map((_, i) => (
-                <div key={i} className="bg-white border border-zinc-200/60 rounded-2xl p-5 animate-pulse">
-                  <div className="h-4 bg-zinc-100 rounded w-3/4 mb-3" />
-                  <div className="h-3 bg-zinc-50 rounded w-full mb-2" />
-                  <div className="h-3 bg-zinc-50 rounded w-2/3" />
-                </div>
-              ))
-            : leads.map((lead, i) => (
-                <div
-                  key={lead.id}
-                  className="bg-white border border-zinc-200/60 rounded-2xl p-4 hover:shadow-lg transition-all"
-                >
-                  <h4 className="font-semibold text-sm text-zinc-900 mb-2">{lead.business_name}</h4>
-                  <div className="flex items-center justify-between text-xs text-zinc-500">
-                    <span className="capitalize">{lead.status.replace(/_/g, " ")}</span>
-                    {lead.project_price > 0 && (
-                      <span className="text-emerald-600 font-medium">${lead.project_price.toLocaleString()}</span>
-                    )}
-                  </div>
-                </div>
-              ))
-          }
-        </div>
+        {/* Follow-Up Calendar */}
+        <FollowUpCalendar leads={allLeads} />
       </div>
 
       <ManualTimeEntryDialog
