@@ -48,31 +48,31 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Analytics from './pages/Analytics';
+import Commissions from './pages/Commissions';
 import Dashboard from './pages/Dashboard';
 import LeadHistory from './pages/LeadHistory';
 import LeadProfile from './pages/LeadProfile';
 import Leads from './pages/Leads';
+import Payouts from './pages/Payouts';
 import Pricing from './pages/Pricing';
 import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
-import Commissions from './pages/Commissions';
-import Payouts from './pages/Payouts';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Analytics": Analytics,
+    "Commissions": Commissions,
     "Dashboard": Dashboard,
     "LeadHistory": LeadHistory,
     "LeadProfile": LeadProfile,
     "Leads": Leads,
+    "Payouts": Payouts,
     "Pricing": Pricing,
     "Projects": Projects,
     "Settings": Settings,
     "TimeTracking": TimeTracking,
-    "Commissions": Commissions,
-    "Payouts": Payouts,
 }
 
 export const pagesConfig = {

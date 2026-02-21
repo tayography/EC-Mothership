@@ -152,10 +152,12 @@ export default function Payouts() {
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
             
             <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
-                <span className="text-sm text-zinc-600">Base Commission (45%)</span>
-                <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-              </div>
+              {name !== 'Jami' && (
+                <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
+                  <span className="text-sm text-zinc-600">Base Commission (45%)</span>
+                  <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                 <span className="text-sm text-zinc-600">Call Commission (10%)</span>
                 <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
