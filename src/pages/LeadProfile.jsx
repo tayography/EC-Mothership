@@ -37,6 +37,12 @@ export default function LeadProfile() {
     { id: "jami", name: "Jami Schnakenberg" }
   ];
 
+  const commissionPeopleMap = {
+    "Braden": "braden@theendlesscreative.com",
+    "Taylor": "taylor@theendlesscreative.com",
+    "Jami Schnakenberg": "Jami.schnakenberg85@gmail.com"
+  };
+
   const [formData, setFormData] = useState({});
 
   React.useEffect(() => {
@@ -48,7 +54,9 @@ export default function LeadProfile() {
   React.useEffect(() => {
     if (currentUser && lead) {
       const isAdmin = currentUser.role === 'admin';
-      setCanEdit(isAdmin);
+      const isCreator = lead.created_by === currentUser.email;
+      const isCallMadeBy = lead.call_made_by && commissionPeopleMap[lead.call_made_by] === currentUser.email;
+      setCanEdit(isAdmin || isCreator || isCallMadeBy);
     }
   }, [currentUser, lead]);
 
@@ -121,7 +129,7 @@ export default function LeadProfile() {
           <div className="flex gap-2">
             {!canEdit && (
               <div className="text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
-                View only - You can only edit leads assigned to you
+                View only - You can only edit leads you created or are assigned to
               </div>
             )}
             {canEdit && (
