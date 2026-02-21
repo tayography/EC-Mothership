@@ -117,7 +117,7 @@ export default function Dashboard() {
       value: `$${totalPipeline.toLocaleString()}`,
       change: pipelineGrowth,
       icon: DollarSign,
-      color: "violet",
+      color: "cyan",
     },
     {
       title: "Active Leads",
@@ -168,13 +168,22 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Dashboard</h1>
           <p className="text-sm text-zinc-400 mt-1">Welcome back, here's your overview</p>
         </div>
-        <Button 
-          onClick={() => setShowTimeDialog(true)}
-          className="bg-violet-600 hover:bg-violet-700 rounded-xl shadow-lg shadow-violet-600/20"
-        >
-          <Clock className="w-4 h-4 mr-2" />
-          Enter Time
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => window.location.href = createPageUrl("Leads")}
+            className="bg-cyan-600 hover:bg-cyan-700 rounded-xl shadow-lg shadow-cyan-600/20"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Lead
+          </Button>
+          <Button 
+            onClick={() => setShowTimeDialog(true)}
+            className="bg-cyan-600 hover:bg-cyan-700 rounded-xl shadow-lg shadow-cyan-600/20"
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            Enter Time
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -309,7 +318,7 @@ export default function Dashboard() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
-          <a href={createPageUrl("Leads")} className="text-xs text-violet-600 hover:text-violet-700 font-medium transition-colors">
+          <a href={createPageUrl("Leads")} className="text-xs text-cyan-600 hover:text-cyan-700 font-medium transition-colors">
             View pipeline →
           </a>
         </div>

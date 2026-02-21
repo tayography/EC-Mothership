@@ -137,7 +137,7 @@ export default function LeadProfile() {
                 <Button
                   onClick={handleSave}
                   disabled={updateMutation.isPending}
-                  className="bg-violet-600 hover:bg-violet-700"
+                  className="bg-cyan-600 hover:bg-cyan-700"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {updateMutation.isPending ? "Saving..." : "Save Changes"}
@@ -353,7 +353,7 @@ export default function LeadProfile() {
             </div>
           </div>
 
-          <div className="bg-violet-50 border border-violet-200/60 rounded-2xl p-6">
+          <div className="bg-cyan-50 border border-cyan-200/60 rounded-2xl p-6">
             <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-zinc-600">Total Hours</span>
