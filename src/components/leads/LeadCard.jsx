@@ -22,13 +22,13 @@ export default function LeadCard({ lead, onClick }) {
       onClick={handleClick}
       className="bg-white border border-zinc-200/60 rounded-xl p-4 hover:shadow-lg hover:border-zinc-300 transition-all cursor-pointer group"
     >
-      <h3 className="font-semibold text-sm text-zinc-900 mb-2 group-hover:text-violet-600 transition-colors">
+      <h3 className="font-semibold text-sm text-zinc-900 mb-2 group-hover:text-cyan-600 transition-colors">
         {lead.business_name}
       </h3>
       
       <div className="space-y-1.5 text-xs text-zinc-500">
         {lead.created_by && (
-          <div className="flex items-center gap-1.5 text-violet-600">
+          <div className="flex items-center gap-1.5 text-cyan-600">
             <User className="w-3 h-3" />
             {lead.created_by.split('@')[0]}
           </div>

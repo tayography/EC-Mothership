@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const stages = [
   { id: "new", label: "New", color: "bg-zinc-100" },
   { id: "contacted", label: "Contacted", color: "bg-blue-100" },
-  { id: "interested", label: "Interested", color: "bg-violet-100" },
+  { id: "interested", label: "Interested", color: "bg-cyan-100" },
   { id: "proposal_sent", label: "Proposal Sent", color: "bg-amber-100" },
   { id: "negotiating", label: "Negotiating", color: "bg-orange-100" },
   { id: "soft_close", label: "Soft Close", color: "bg-emerald-100" },
@@ -123,7 +123,7 @@ export default function Leads() {
       {leadsToCall.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <Phone className="w-5 h-5 text-violet-600" />
+            <Phone className="w-5 h-5 text-cyan-600" />
             <h2 className="text-lg font-semibold text-zinc-900">Leads to Call</h2>
             <span className="text-sm text-zinc-400">({leadsToCall.length})</span>
           </div>
@@ -187,7 +187,7 @@ export default function Leads() {
                 {!isExpanded && stageLeads.length > 1 && (
                   <button
                     onClick={() => toggleStage(stage.id)}
-                    className="w-full text-xs text-violet-600 hover:text-violet-700 font-medium py-2 text-center"
+                    className="w-full text-xs text-cyan-600 hover:text-cyan-700 font-medium py-2 text-center"
                   >
                     + {stageLeads.length - 1} more lead{stageLeads.length - 1 !== 1 ? 's' : ''}
                   </button>
