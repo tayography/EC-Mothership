@@ -81,7 +81,7 @@ export default function Pricing() {
         {activeProducts.map((option) => (
           <div
             key={option.id}
-            className="bg-white border border-zinc-200/60 rounded-2xl p-6 hover:shadow-lg transition-all relative group"
+            className="bg-white border border-zinc-200/60 rounded-2xl p-6 hover:shadow-lg transition-all relative group flex flex-col h-full"
           >
             {canEdit && (
               <button
@@ -92,8 +92,8 @@ export default function Pricing() {
               </button>
             )}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">{option.name}</h3>
-              <p className="text-sm text-zinc-500 mb-4">{option.description}</p>
+              <h3 className="text-lg font-semibold text-zinc-900 mb-2 min-h-[3.5rem]">{option.name}</h3>
+              <p className="text-sm text-zinc-500 mb-4 min-h-[2.5rem]">{option.description}</p>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold text-zinc-900">${option.price}</span>
                 <span className="text-sm text-zinc-500">{option.period}</span>
@@ -103,7 +103,7 @@ export default function Pricing() {
               )}
             </div>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-3 flex-1">
               {(option.features || []).map((feature, idx) => (
                 <div key={idx} className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
@@ -111,10 +111,6 @@ export default function Pricing() {
                 </div>
               ))}
             </div>
-
-            <Button className="w-full bg-zinc-900 hover:bg-zinc-800 rounded-xl">
-              Get Started
-            </Button>
           </div>
         ))}
       </div>
