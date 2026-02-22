@@ -10,6 +10,10 @@ import { createPageUrl } from "@/utils";
 export default function LeadsToCall({ leads, onUpdate }) {
   const [expandedId, setExpandedId] = React.useState(null);
   const [formData, setFormData] = React.useState({});
+  const [showAll, setShowAll] = React.useState(false);
+  
+  const displayLeads = showAll ? leads : leads.slice(0, 4);
+  const hasMore = leads.length > 4;
 
   const handleToggle = (leadId) => {
     setExpandedId(expandedId === leadId ? null : leadId);
@@ -33,7 +37,7 @@ export default function LeadsToCall({ leads, onUpdate }) {
 
   return (
     <div className="space-y-3">
-      {leads.map((lead) => (
+      {displayLeads.map((lead) => (
         <motion.div
           key={lead.id}
           initial={{ opacity: 0, y: 10 }}
@@ -111,6 +115,15 @@ export default function LeadsToCall({ leads, onUpdate }) {
           )}
         </motion.div>
       ))}
+      
+      {hasMore && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="w-full text-xs text-cyan-600 hover:text-cyan-700 font-medium py-2 text-center bg-white border border-zinc-200/60 rounded-xl"
+        >
+          {showAll ? `Show less` : `+ ${leads.length - 4} more lead${leads.length - 4 !== 1 ? 's' : ''}`}
+        </button>
+      )}
     </div>
   );
 }
