@@ -55,8 +55,8 @@ export default function Sidebar({ currentPage }) {
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-8">
         <img 
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69991f8ebcf017a40f7536b2/99d55a53e_ECMOTHERSHIP.png" 
-          alt="EC Mothership"
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69991f8ebcf017a40f7536b2/b33a1abd8_transparent.png" 
+          alt="The Endless Creative Mothership"
           className="w-9 h-9 rounded-xl object-cover shadow-lg"
         />
         <AnimatePresence>
