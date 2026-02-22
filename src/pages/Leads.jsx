@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Phone, ChevronDown } from "lucide-react";
+import { Plus, Phone, ChevronDown, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import LeadCard from "../components/leads/LeadCard";
 import LeadFormDialog from "../components/leads/LeadFormDialog";
 import LeadsToCall from "../components/leads/LeadsToCall";
+import ImportLeadsDialog from "../components/leads/ImportLeadsDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
 const stages = [
@@ -26,6 +27,7 @@ export default function Leads() {
   const [showForm, setShowForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [expandedStages, setExpandedStages] = useState({});
+  const [showImport, setShowImport] = useState(false);
   const queryClient = useQueryClient();
 
   const toggleStage = (stageId) => {
@@ -110,13 +112,23 @@ export default function Leads() {
             {leads.length} leads • ${totalValue.toLocaleString()} total value
           </p>
         </div>
-        <Button
-          onClick={() => { setEditingLead(null); setShowForm(true); }}
-          className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl shadow-lg shadow-zinc-900/10"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Lead
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setShowImport(true)}
+            variant="outline"
+            className="rounded-xl"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Import CSV
+          </Button>
+          <Button
+            onClick={() => { setEditingLead(null); setShowForm(true); }}
+            className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl shadow-lg shadow-zinc-900/10"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Lead
+          </Button>
+        </div>
       </div>
 
       {/* Leads to Call Section */}
@@ -205,6 +217,12 @@ export default function Leads() {
         onSubmit={handleSubmit}
         onDelete={editingLead ? () => deleteMutation.mutate(editingLead.id) : null}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
+      />
+
+      <ImportLeadsDialog
+        open={showImport}
+        onOpenChange={setShowImport}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ["leads"] })}
       />
     </PageTransition>
   );
