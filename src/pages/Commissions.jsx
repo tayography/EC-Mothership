@@ -1,72 +1,117 @@
-import React from "react";
-import { DollarSign, User, Award } from "lucide-react";
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { DollarSign, User, Award, Plus, Pencil } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
+import { Button } from "@/components/ui/button";
+import CommissionFormDialog from "../components/commissions/CommissionFormDialog";
 
 export default function Commissions() {
+  const [showForm, setShowForm] = useState(false);
+  const [editingCommission, setEditingCommission] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
+  }, []);
+
+  const { data: commissions = [] } = useQuery({
+    queryKey: ["commissions"],
+    queryFn: () => base44.entities.CommissionStructure.list("-created_date"),
+    initialData: [],
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.CommissionStructure.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["commissions"] });
+      setShowForm(false);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.CommissionStructure.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["commissions"] });
+      setShowForm(false);
+      setEditingCommission(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.CommissionStructure.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["commissions"] });
+      setShowForm(false);
+      setEditingCommission(null);
+    },
+  });
+
+  const handleSubmit = (data) => {
+    if (editingCommission) {
+      updateMutation.mutate({ id: editingCommission.id, data });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+
+  const canEdit = currentUser?.role === 'admin';
+  const activeCommissions = commissions.filter(c => c.is_active);
+
   return (
     <PageTransition>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Commission Structure</h1>
-        <p className="text-sm text-zinc-400 mt-1">How commissions are calculated and distributed</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Commission Structure</h1>
+          <p className="text-sm text-zinc-400 mt-1">How commissions are calculated and distributed</p>
+        </div>
+        {canEdit && (
+          <Button
+            onClick={() => { setEditingCommission(null); setShowForm(true); }}
+            className="bg-zinc-900 hover:bg-zinc-800 rounded-xl"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Commission
+          </Button>
+        )}
       </div>
 
       <div className="space-y-6">
-        {/* Call/Lead Commission */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-stone-600 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
-              <DollarSign className="text-sky-500 lucide lucide-dollar-sign w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">Call Made / Lead Provided</h3>
-              <p className="text-sm text-zinc-600 mb-3">
-                When a call is made or a lead is provided, the person responsible receives an immediate commission.
-              </p>
-              <div className="bg-stone-600 p-4 rounded-xl border border-violet-200">
-                <p className="text-sky-500 text-2xl font-bold">10%</p>
-                <p className="text-sky-400 text-sm">of project price collected by company</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {activeCommissions.map((commission) => {
+          const iconMap = {
+            "dollar-sign": DollarSign,
+            "user": User,
+            "award": Award
+          };
+          const Icon = iconMap[commission.icon] || DollarSign;
 
-        {/* Base Commission for Braden & Taylor */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-stone-700 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
-              <User className="text-sky-500 lucide lucide-user w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">Base Commission (Braden & Taylor)</h3>
-              <p className="text-sm text-zinc-600 mb-3">
-                Braden and Taylor each receive a base commission on every project.
-              </p>
-              <div className="bg-stone-700 p-4 rounded-xl border border-emerald-200">
-                <p className="text-sky-500 text-2xl font-bold">45%</p>
-                <p className="text-sky-500 text-sm">of project price collected by company (each)</p>
+          return (
+            <div key={commission.id} className="bg-white border border-zinc-200/60 rounded-2xl p-6 relative group">
+              {canEdit && (
+                <button
+                  onClick={() => { setEditingCommission(commission); setShowForm(true); }}
+                  className="absolute top-4 right-4 p-2 rounded-lg bg-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-zinc-200"
+                >
+                  <Pencil className="w-4 h-4 text-zinc-600" />
+                </button>
+              )}
+              <div className="flex items-start gap-4">
+                <div className="bg-stone-700 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
+                  <Icon className="text-sky-500 w-6 h-6" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-zinc-900 mb-2">{commission.name}</h3>
+                  <p className="text-sm text-zinc-600 mb-3">{commission.description}</p>
+                  <div className="bg-stone-700 p-4 rounded-xl border border-violet-200">
+                    <p className="text-sky-500 text-2xl font-bold">{commission.percentage}%</p>
+                    <p className="text-sky-400 text-sm">of project price</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Combined Commission */}
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-stone-800 rounded-xl w-12 h-12 flex items-center justify-center flex-shrink-0">
-              <Award className="text-sky-500 lucide lucide-award w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">Combined Commission (Braden & Taylor)</h3>
-              <p className="text-sm text-zinc-600 mb-3">
-                If Braden or Taylor makes the call or is assigned to the lead as EC Rep, they receive both commissions.
-              </p>
-              <div className="bg-stone-800 p-4 rounded-xl border border-amber-200">
-                <p className="text-sky-500 text-2xl font-bold">55%</p>
-                <p className="text-sky-500 text-sm">45% base + 10% call/lead commission</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          );
+        })}
 
         {/* EC Tech Note */}
         <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-6">
@@ -76,6 +121,15 @@ export default function Commissions() {
           </p>
         </div>
       </div>
+
+      <CommissionFormDialog
+        open={showForm}
+        onOpenChange={setShowForm}
+        commission={editingCommission}
+        onSubmit={handleSubmit}
+        onDelete={editingCommission ? () => deleteMutation.mutate(editingCommission.id) : null}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
+      />
     </PageTransition>);
 
 }

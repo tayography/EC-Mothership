@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar, Pencil } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 export default function Payouts() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [currentUser, setCurrentUser] = useState(null);
+  const [editingPayout, setEditingPayout] = useState(null);
+
+  React.useEffect(() => {
+    base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
+  }, []);
 
   const { data: leads = [] } = useQuery({
     queryKey: ["leads"],
@@ -82,6 +89,7 @@ export default function Payouts() {
 
   const payouts = calculatePayouts();
   const totalRevenue = yearLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const canEdit = currentUser?.role === 'admin';
 
   return (
     <PageTransition>
@@ -148,19 +156,53 @@ export default function Payouts() {
       {/* Payout Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.entries(payouts).map(([name, data]) =>
-        <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6">
+        <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6 group">
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
             
             <div className="space-y-3 mb-6">
               {name !== 'Jami' &&
             <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                   <span className="text-sm text-zinc-600">Base Commission (45%)</span>
-                  <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  {canEdit && editingPayout === `${name}-base` ? (
+                    <Input 
+                      type="number"
+                      className="w-32 h-7 text-sm"
+                      defaultValue={data.base.toFixed(2)}
+                      onBlur={() => setEditingPayout(null)}
+                      autoFocus
+                    />
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-zinc-900">${data.base.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      {canEdit && (
+                        <button onClick={() => setEditingPayout(`${name}-base`)} className="opacity-0 group-hover:opacity-100">
+                          <Pencil className="w-3 h-3 text-zinc-400" />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
             }
               <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                 <span className="text-sm text-zinc-600">Call Commission (10%)</span>
-                <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                {canEdit && editingPayout === `${name}-commission` ? (
+                  <Input 
+                    type="number"
+                    className="w-32 h-7 text-sm"
+                    defaultValue={data.commission.toFixed(2)}
+                    onBlur={() => setEditingPayout(null)}
+                    autoFocus
+                  />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-zinc-900">${data.commission.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    {canEdit && (
+                      <button onClick={() => setEditingPayout(`${name}-commission`)} className="opacity-0 group-hover:opacity-100">
+                        <Pencil className="w-3 h-3 text-zinc-400" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex items-center justify-between pt-2">
                 <span className="text-base font-semibold text-zinc-900">Total Payout</span>
