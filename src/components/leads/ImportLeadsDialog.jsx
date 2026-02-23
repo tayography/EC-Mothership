@@ -39,17 +39,12 @@ export default function ImportLeadsDialog({ open, onOpenChange, onSuccess }) {
       const result = await base44.integrations.Core.ExtractDataFromUploadedFile({
         file_url,
         json_schema: {
-          type: "object",
-          properties: {
-            leads: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  business_name: { type: "string" },
-                  phone: { type: "string" }
-                }
-              }
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              business_name: { type: "string" },
+              phone: { type: "string" }
             }
           }
         }
@@ -62,7 +57,7 @@ export default function ImportLeadsDialog({ open, onOpenChange, onSuccess }) {
       }
 
       // Get the leads array from the result
-      const leadsData = result.output?.leads || [];
+      const leadsData = Array.isArray(result.output) ? result.output : [];
       
       if (leadsData.length === 0) {
         setStatus("error");
