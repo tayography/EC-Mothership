@@ -28,6 +28,7 @@ export default function Leads() {
   const [editingLead, setEditingLead] = useState(null);
   const [expandedStages, setExpandedStages] = useState({});
   const [showImport, setShowImport] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
 
   const toggleStage = (stageId) => {
@@ -37,14 +38,30 @@ export default function Leads() {
     }));
   };
 
-  const { data: leads = [], isLoading } = useQuery({
+  const { data: leads = [], isLoading, refetch } = useQuery({
     queryKey: ["leads"],
     queryFn: () => base44.entities.Lead.list("-created_date"),
     initialData: [],
   });
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setTimeout(() => setRefreshing(false), 500);
+  };
+
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Lead.create(data),
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ["leads"] });
+      const previous = queryClient.getQueryData(["leads"]);
+      const optimistic = { ...data, id: `temp-${Date.now()}`, created_date: new Date().toISOString() };
+      queryClient.setQueryData(["leads"], old => [...(old || []), optimistic]);
+      return { previous };
+    },
+    onError: (err, data, context) => {
+      queryClient.setQueryData(["leads"], context.previous);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setShowForm(false);
@@ -53,6 +70,17 @@ export default function Leads() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Lead.update(id, data),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ["leads"] });
+      const previous = queryClient.getQueryData(["leads"]);
+      queryClient.setQueryData(["leads"], old => 
+        (old || []).map(lead => lead.id === id ? { ...lead, ...data } : lead)
+      );
+      return { previous };
+    },
+    onError: (err, vars, context) => {
+      queryClient.setQueryData(["leads"], context.previous);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setShowForm(false);
@@ -62,6 +90,15 @@ export default function Leads() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Lead.delete(id),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["leads"] });
+      const previous = queryClient.getQueryData(["leads"]);
+      queryClient.setQueryData(["leads"], old => (old || []).filter(l => l.id !== id));
+      return { previous };
+    },
+    onError: (err, id, context) => {
+      queryClient.setQueryData(["leads"], context.previous);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       setShowForm(false);
@@ -71,6 +108,17 @@ export default function Leads() {
 
   const updateLeadMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Lead.update(id, data),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ["leads"] });
+      const previous = queryClient.getQueryData(["leads"]);
+      queryClient.setQueryData(["leads"], old => 
+        (old || []).map(lead => lead.id === id ? { ...lead, ...data } : lead)
+      );
+      return { previous };
+    },
+    onError: (err, vars, context) => {
+      queryClient.setQueryData(["leads"], context.previous);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
     },
@@ -105,25 +153,39 @@ export default function Leads() {
 
   return (
     <PageTransition>
+      <div
+        onTouchStart={(e) => {
+          const touch = e.touches[0];
+          const startY = touch.clientY;
+          const onTouchMove = (e) => {
+            const touch = e.touches[0];
+            const currentY = touch.clientY;
+            if (currentY - startY > 100 && window.scrollY === 0) {
+              handleRefresh();
+            }
+          };
+          window.addEventListener('touchmove', onTouchMove, { once: true });
+        }}
+      >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Sales Pipeline</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Sales Pipeline</h1>
           <p className="text-sm text-zinc-400 mt-1">
-            {leads.length} leads • ${totalValue.toLocaleString()} total value
+            {refreshing ? "Refreshing..." : `${leads.length} leads • $${totalValue.toLocaleString()} total value`}
           </p>
         </div>
         <div className="flex gap-2">
           <Button
             onClick={() => setShowImport(true)}
             variant="outline"
-            className="rounded-xl"
+            className="rounded-xl select-none"
           >
             <Upload className="w-4 h-4 mr-2" />
             Import CSV
           </Button>
           <Button
             onClick={() => { setEditingLead(null); setShowForm(true); }}
-            className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl shadow-lg shadow-zinc-900/10"
+            className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl shadow-lg shadow-zinc-900/10 select-none"
           >
             <Plus className="w-4 h-4 mr-2" />
             New Lead
@@ -224,6 +286,7 @@ export default function Leads() {
         onOpenChange={setShowImport}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["leads"] })}
       />
+      </div>
     </PageTransition>
   );
 }
