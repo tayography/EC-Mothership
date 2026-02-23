@@ -17,12 +17,14 @@ import {
   Clock,
   DollarSign,
   Wallet,
+  Target,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const allNavItems = [
   { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
   { name: "Leads", icon: FolderKanban, page: "Leads" },
+  { name: "War Room", icon: Target, page: "WarRoom" },
   { name: "Time Tracking", icon: Clock, page: "TimeTracking" },
   { name: "Analytics", icon: BarChart3, page: "Analytics" },
   { name: "Pricing", icon: DollarSign, page: "Pricing" },
