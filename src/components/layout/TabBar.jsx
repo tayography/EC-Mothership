@@ -13,7 +13,8 @@ const tabs = [
 
 export default function TabBar({ currentPage }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 pb-safe pointer-events-none">
+      <div className="pointer-events-auto">
       <div className="grid grid-cols-4 h-16">
         {tabs.map((tab) => {
           const isActive = currentPage === tab.page;
@@ -35,6 +36,7 @@ export default function TabBar({ currentPage }) {
             </Link>
           );
         })}
+      </div>
       </div>
     </div>
   );
