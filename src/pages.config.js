@@ -58,6 +58,7 @@ import Pricing from './pages/Pricing';
 import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
+import WarRoom from './pages/WarRoom';
 import __Layout from './Layout.jsx';
 
 
@@ -73,6 +74,7 @@ export const PAGES = {
     "Projects": Projects,
     "Settings": Settings,
     "TimeTracking": TimeTracking,
+    "WarRoom": WarRoom,
 }
 
 export const pagesConfig = {
