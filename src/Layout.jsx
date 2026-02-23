@@ -6,7 +6,9 @@ import ThemeProvider from "./components/layout/ThemeProvider";
 export default function Layout({ children, currentPageName }) {
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-zinc-50/80 dark:bg-zinc-950">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-950 dark:to-purple-950 relative">
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent dark:from-blue-500/10 pointer-events-none" />
+        <div className="relative z-10">
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
           @supports (padding: max(0px)) {
@@ -32,7 +34,8 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </main>
         <TabBar currentPage={currentPageName} />
-      </div>
-    </ThemeProvider>
+        </div>
+        </div>
+        </ThemeProvider>
   );
 }
