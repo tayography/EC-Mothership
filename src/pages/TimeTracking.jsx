@@ -80,6 +80,17 @@ export default function TimeTracking() {
         }
       }
     },
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ["timeEntries"] });
+      const previousEntries = queryClient.getQueryData(["timeEntries"]);
+      queryClient.setQueryData(["timeEntries"], old => 
+        (old || []).map(entry => entry.id === editingEntry.id ? { ...entry, ...data } : entry)
+      );
+      return { previousEntries };
+    },
+    onError: (err, data, context) => {
+      queryClient.setQueryData(["timeEntries"], context.previousEntries);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timeEntries"] });
       queryClient.invalidateQueries({ queryKey: ["leads"] });

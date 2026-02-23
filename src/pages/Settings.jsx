@@ -6,16 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Bell, Shield, Palette, Save, Loader2, Check, History } from "lucide-react";
+import { User, Bell, Shield, Palette, Save, Loader2, Check, History, Trash2, Moon, Sun, Monitor } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import { createPageUrl } from "@/utils";
+import { useTheme } from "../components/layout/ThemeProvider";
+import { toast } from "sonner";
 
 const sections = [
   { id: "profile", label: "Profile", icon: User },
+  { id: "appearance", label: "Appearance", icon: Palette },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "security", label: "Security", icon: Shield },
-  { id: "appearance", label: "Appearance", icon: Palette },
   { id: "leads", label: "Lead History", icon: History },
 ];
 
@@ -24,10 +26,29 @@ export default function Settings() {
   const [user, setUser] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== "DELETE") {
+      toast.error("Please type DELETE to confirm");
+      return;
+    }
+    
+    try {
+      await base44.entities.User.delete(user.id);
+      toast.success("Account deleted successfully");
+      setTimeout(() => {
+        base44.auth.logout();
+      }, 1000);
+    } catch (error) {
+      toast.error("Failed to delete account");
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -153,28 +174,38 @@ export default function Settings() {
             {activeSection === "appearance" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Appearance</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Appearance</h3>
                   <p className="text-xs text-zinc-400 mt-0.5">Customize how the dashboard looks</p>
                 </div>
-                <Separator className="bg-zinc-100" />
+                <Separator className="bg-zinc-100 dark:bg-zinc-800" />
                 <div>
-                  <Label className="text-xs text-zinc-500 mb-3 block">Theme</Label>
+                  <Label className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 block">Theme</Label>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { name: "Light", bg: "bg-white border-violet-500", active: true },
-                      { name: "Dark", bg: "bg-zinc-900", active: false },
-                      { name: "System", bg: "bg-gradient-to-r from-white to-zinc-900", active: false },
-                    ].map((theme) => (
-                      <button
-                        key={theme.name}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          theme.active ? "border-violet-500 shadow-lg shadow-violet-500/10" : "border-zinc-200 hover:border-zinc-300"
-                        }`}
-                      >
-                        <div className={`w-full h-8 rounded-lg ${theme.bg} mb-2 border border-zinc-200/40`} />
-                        <p className="text-xs font-medium text-zinc-600">{theme.name}</p>
-                      </button>
-                    ))}
+                      { name: "Light", value: "light", icon: Sun },
+                      { name: "Dark", value: "dark", icon: Moon },
+                      { name: "System", value: "system", icon: Monitor },
+                    ].map((t) => {
+                      const Icon = t.icon;
+                      return (
+                        <button
+                          key={t.name}
+                          onClick={() => setTheme(t.value)}
+                          className={`p-4 rounded-xl border-2 transition-all select-none ${
+                            theme === t.value 
+                              ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-950/20 shadow-lg shadow-cyan-500/10" 
+                              : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"
+                          }`}
+                        >
+                          <div className="flex items-center justify-center mb-2">
+                            <Icon className={`w-6 h-6 ${theme === t.value ? "text-cyan-600 dark:text-cyan-400" : "text-zinc-400"}`} />
+                          </div>
+                          <p className={`text-xs font-medium ${theme === t.value ? "text-cyan-700 dark:text-cyan-300" : "text-zinc-600 dark:text-zinc-400"}`}>
+                            {t.name}
+                          </p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -183,17 +214,61 @@ export default function Settings() {
             {activeSection === "leads" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900">Lead History</h3>
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Lead History</h3>
                   <p className="text-xs text-zinc-400 mt-0.5">View and manage your lead history</p>
                 </div>
-                <Separator className="bg-zinc-100" />
+                <Separator className="bg-zinc-100 dark:bg-zinc-800" />
                 <Button
                   onClick={() => window.location.href = createPageUrl("LeadHistory")}
-                  className="w-full bg-violet-600 hover:bg-violet-700 rounded-xl"
+                  className="w-full bg-violet-600 hover:bg-violet-700 rounded-xl select-none"
                 >
                   <History className="w-4 h-4 mr-2" />
                   View Lead History
                 </Button>
+              </div>
+            )}
+
+            {activeSection === "security" && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Security Settings</h3>
+                  <p className="text-xs text-zinc-400 mt-0.5">Manage your account security</p>
+                </div>
+                <Separator className="bg-zinc-100 dark:bg-zinc-800" />
+                
+                <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-xl p-4">
+                  <div className="flex items-start gap-3 mb-4">
+                    <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-semibold text-red-900 dark:text-red-100">Delete Account</h4>
+                      <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+                        This action cannot be undone. This will permanently delete your account and all associated data.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs text-red-700 dark:text-red-300 mb-1.5 block">
+                        Type DELETE to confirm
+                      </Label>
+                      <Input
+                        value={deleteConfirm}
+                        onChange={(e) => setDeleteConfirm(e.target.value)}
+                        placeholder="DELETE"
+                        className="bg-white dark:bg-zinc-900 border-red-300 dark:border-red-800 rounded-lg"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteConfirm !== "DELETE"}
+                      variant="destructive"
+                      className="w-full bg-red-600 hover:bg-red-700 rounded-lg select-none"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete My Account
+                    </Button>
+                  </div>
+                </div>
               </div>
             )}
 

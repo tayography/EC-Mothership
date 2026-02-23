@@ -8,7 +8,9 @@ import PageTransition from "../components/layout/PageTransition";
 import { createPageUrl } from "@/utils";
 
 export default function LeadHistory() {
-  const { data: leads = [] } = useQuery({
+  const [refreshing, setRefreshing] = React.useState(false);
+  
+  const { data: leads = [], refetch } = useQuery({
     queryKey: ["leads"],
     queryFn: () => base44.entities.Lead.list(),
     initialData: [],
@@ -16,8 +18,28 @@ export default function LeadHistory() {
 
   const lostLeads = leads.filter(l => l.status === "closed_lost");
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setTimeout(() => setRefreshing(false), 500);
+  };
+
   return (
     <PageTransition>
+      <div
+        onTouchStart={(e) => {
+          const touch = e.touches[0];
+          const startY = touch.clientY;
+          const onTouchMove = (e) => {
+            const touch = e.touches[0];
+            const currentY = touch.clientY;
+            if (currentY - startY > 100 && window.scrollY === 0) {
+              handleRefresh();
+            }
+          };
+          window.addEventListener('touchmove', onTouchMove, { once: true });
+        }}
+      >
       <div className="mb-6">
         <Button
           variant="ghost"
@@ -29,8 +51,8 @@ export default function LeadHistory() {
           Back to Settings
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Lead History</h1>
-          <p className="text-sm text-zinc-400 mt-1">View closed and lost leads</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Lead History</h1>
+          <p className="text-sm text-zinc-400 mt-1">{refreshing ? "Refreshing..." : "View closed and lost leads"}</p>
         </div>
       </div>
 
@@ -100,6 +122,7 @@ export default function LeadHistory() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </PageTransition>
   );
