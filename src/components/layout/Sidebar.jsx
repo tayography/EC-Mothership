@@ -93,10 +93,10 @@ export default function Sidebar({ currentPage }) {
               to={createPageUrl(item.page)}
               onClick={() => setMobileOpen(false)}
               className={`
-                group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 card-3d
                 ${isActive
-                  ? "bg-zinc-900 text-white shadow-lg shadow-zinc-900/10"
-                  : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 text-white shadow-xl shadow-blue-500/30"
+                  : "text-zinc-600 dark:text-zinc-300 hover:bg-white/50 dark:hover:bg-white/10 backdrop-blur-xl hover:shadow-lg"
                 }
               `}
             >
@@ -173,7 +173,7 @@ export default function Sidebar({ currentPage }) {
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="lg:hidden fixed left-3 top-3 bottom-3 z-50 w-64 bg-white/80 backdrop-blur-xl border border-zinc-200/60 rounded-2xl shadow-2xl overflow-hidden"
+            className="lg:hidden fixed left-3 top-3 bottom-3 z-50 w-64 bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden"
           >
             <NavContent />
           </motion.aside>
@@ -184,7 +184,7 @@ export default function Sidebar({ currentPage }) {
       <motion.aside
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="hidden lg:block fixed left-3 top-3 bottom-3 z-30 bg-white/80 backdrop-blur-xl border border-zinc-200/60 rounded-2xl shadow-xl shadow-zinc-900/5 overflow-hidden"
+        className="hidden lg:block fixed left-3 top-3 bottom-3 z-30 bg-white/40 dark:bg-slate-900/40 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden"
       >
         <NavContent />
         <button

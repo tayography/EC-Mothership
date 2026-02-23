@@ -165,8 +165,8 @@ export default function Dashboard() {
     <PageTransition>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Dashboard</h1>
-          <p className="text-sm text-zinc-400 mt-1">Welcome back, here's your overview</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">Dashboard</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Welcome back, here's your overview</p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -195,13 +195,13 @@ export default function Dashboard() {
 
       {/* Leaderboard */}
       <div className="mb-6">
-        <div className="bg-white border border-zinc-200/60 rounded-2xl p-6">
-          <h3 className="text-sm font-semibold text-zinc-900 mb-4">🏆 Leaderboard</h3>
+        <div className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl card-3d">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">🏆 Leaderboard</h3>
           <div className="space-y-2">
             {leaderboard.map((rep, index) => (
               <div
                 key={rep.email}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-50 transition-colors"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm ${
@@ -317,15 +317,15 @@ export default function Dashboard() {
       {/* Recent Leads */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-zinc-900">Recent Leads</h3>
-          <a href={createPageUrl("Leads")} className="text-xs text-cyan-600 hover:text-cyan-700 font-medium transition-colors">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">Recent Leads</h3>
+          <a href={createPageUrl("Leads")} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 font-medium transition-colors">
             View pipeline →
           </a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {loadingLeads
             ? Array(4).fill(0).map((_, i) => (
-                <div key={i} className="bg-white border border-zinc-200/60 rounded-2xl p-5 animate-pulse">
+                <div key={i} className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-5 animate-pulse shadow-lg">
                   <div className="h-4 bg-zinc-100 rounded w-3/4 mb-3" />
                   <div className="h-3 bg-zinc-50 rounded w-full mb-2" />
                   <div className="h-3 bg-zinc-50 rounded w-2/3" />
@@ -335,7 +335,7 @@ export default function Dashboard() {
                 <div
                   key={lead.id}
                   onClick={() => window.location.href = createPageUrl("LeadProfile") + `?id=${lead.id}`}
-                  className="bg-white border border-zinc-200/60 rounded-2xl p-4 hover:shadow-lg transition-all cursor-pointer"
+                  className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-4 hover:shadow-2xl hover:scale-105 transition-all duration-200 cursor-pointer card-3d"
                 >
                   <h4 className="font-semibold text-sm text-zinc-900 mb-2">{lead.business_name}</h4>
                   <div className="flex items-center justify-between text-xs text-zinc-500">
