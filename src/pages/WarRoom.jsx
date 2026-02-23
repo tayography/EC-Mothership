@@ -2,6 +2,7 @@ import React from "react";
 import PageTransition from "../components/layout/PageTransition";
 import { TrendingUp, MapPin, Users, Star, AlertCircle, Target, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import SalesPitchAgent from "../components/warroom/SalesPitchAgent";
 
 const statsCards = [
   {
@@ -101,6 +102,9 @@ export default function WarRoom() {
         <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">War Room</h1>
         <p className="text-sm text-zinc-400 mt-1">Sales pitch reference cards with data-backed talking points</p>
       </div>
+
+      {/* AI Sales Pitch Assistant */}
+      <SalesPitchAgent />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
