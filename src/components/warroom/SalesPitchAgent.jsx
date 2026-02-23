@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Bot, Send, Loader2, X } from "lucide-react";
+import { Send, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,7 +73,11 @@ export default function SalesPitchAgent() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 animate-pulse" />
             <div className="relative flex items-center gap-4">
               <div className="bg-white/30 backdrop-blur-md w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/40 shadow-lg">
-                <Bot className="w-7 h-7 animate-pulse" />
+                <svg className="w-7 h-7 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
+                  <circle cx="9" cy="10" r="1"/>
+                  <circle cx="15" cy="10" r="1"/>
+                </svg>
               </div>
               <div className="flex-1 text-left">
                 <h2 className="text-lg font-bold mb-1 tracking-tight">AI Market Intel Assistant</h2>
@@ -99,7 +103,11 @@ export default function SalesPitchAgent() {
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-purple-400/10 animate-pulse" />
               <div className="relative flex items-center gap-3">
                 <div className="bg-white/30 backdrop-blur-md w-10 h-10 rounded-xl flex items-center justify-center border border-white/40">
-                  <Bot className="w-5 h-5 text-white animate-pulse" />
+                  <svg className="w-5 h-5 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
+                    <circle cx="9" cy="10" r="1"/>
+                    <circle cx="15" cy="10" r="1"/>
+                  </svg>
                 </div>
                 <div>
                   <h3 className="text-white font-bold tracking-tight">AI Market Intel Assistant</h3>
@@ -121,7 +129,11 @@ export default function SalesPitchAgent() {
               {messages.length === 0 && (
                 <div className="text-center py-12">
                   <div className="relative inline-block">
-                    <Bot className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" />
+                    <svg className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
+                      <circle cx="9" cy="10" r="1"/>
+                      <circle cx="15" cy="10" r="1"/>
+                    </svg>
                     <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full" />
                   </div>
                   <p className="text-sm text-cyan-300/70 font-medium">Ask about any industry to get market research</p>
