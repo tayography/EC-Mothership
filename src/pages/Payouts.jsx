@@ -50,17 +50,21 @@ export default function Payouts() {
   const calculatePayouts = () => {
     const payouts = {};
 
-    // Only track these 3 people
-    ['Braden', 'Taylor', 'Jami'].forEach((name) => {
-      payouts[name] = { base: 0, commission: 0, total: 0, leads: [] };
+    // Track users with ec_rep role or admin
+    const eligibleUsers = users.filter(u => u.role === 'ec_rep' || u.role === 'admin');
+    eligibleUsers.forEach((user) => {
+      const name = user.full_name;
+      payouts[name] = { base: 0, commission: 0, total: 0, leads: [], email: user.email };
     });
 
     yearLeads.forEach((lead) => {
       const price = lead.project_price || 0;
 
-      // Base 45% for both Braden and Taylor
-      if (payouts.Braden) payouts.Braden.base += price * 0.45;
-      if (payouts.Taylor) payouts.Taylor.base += price * 0.45;
+      // Base 45% for EC Tech assignment
+      const ecTech = lead.ec_tech;
+      if (ecTech && payouts[ecTech]) {
+        payouts[ecTech].base += price * 0.45;
+      }
 
       // 10% commission based on call_made_by field
       const callMadeBy = lead.call_made_by;
@@ -71,7 +75,7 @@ export default function Payouts() {
       // Track leads for each person who gets a commission
       Object.keys(payouts).forEach((name) => {
         const hasCommission = callMadeBy === name;
-        const hasBase = name === 'Braden' || name === 'Taylor';
+        const hasBase = ecTech === name;
 
         if (hasCommission || hasBase) {
           payouts[name].leads.push({ ...lead, hasCallCommission: hasCommission });
@@ -160,7 +164,7 @@ export default function Payouts() {
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
             
             <div className="space-y-3 mb-6">
-              {name !== 'Jami' &&
+              {data.base > 0 &&
             <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                   <span className="text-sm text-zinc-600">Base Commission (45%)</span>
                   {canEdit && editingPayout === `${name}-base` ? (
