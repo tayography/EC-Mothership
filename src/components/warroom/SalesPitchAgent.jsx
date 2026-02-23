@@ -73,10 +73,15 @@ export default function SalesPitchAgent() {
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 animate-pulse" />
             <div className="relative flex items-center gap-4">
               <div className="bg-white/30 backdrop-blur-md w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/40 shadow-lg">
-                <svg className="w-7 h-7 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
-                  <circle cx="9" cy="10" r="1"/>
-                  <circle cx="15" cy="10" r="1"/>
+                <svg className="w-7 h-7 animate-pulse" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3C8.5 3 5.5 5.5 5 9c-.3 2 .5 4.5 1.5 6.5L8 21h8l1.5-5.5c1-2 1.8-4.5 1.5-6.5-.5-3.5-3.5-6-7-6z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <ellipse cx="9" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                  <ellipse cx="9.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                  <ellipse cx="15" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                  <ellipse cx="15.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                  <circle cx="10.5" cy="14.5" r="0.5" fill="currentColor"/>
+                  <circle cx="13.5" cy="14.5" r="0.5" fill="currentColor"/>
+                  <line x1="10" y1="16.5" x2="14" y2="16.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
                 </svg>
               </div>
               <div className="flex-1 text-left">
@@ -103,10 +108,15 @@ export default function SalesPitchAgent() {
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-purple-400/10 animate-pulse" />
               <div className="relative flex items-center gap-3">
                 <div className="bg-white/30 backdrop-blur-md w-10 h-10 rounded-xl flex items-center justify-center border border-white/40">
-                  <svg className="w-5 h-5 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
-                    <circle cx="9" cy="10" r="1"/>
-                    <circle cx="15" cy="10" r="1"/>
+                  <svg className="w-5 h-5 text-white animate-pulse" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3C8.5 3 5.5 5.5 5 9c-.3 2 .5 4.5 1.5 6.5L8 21h8l1.5-5.5c1-2 1.8-4.5 1.5-6.5-.5-3.5-3.5-6-7-6z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <ellipse cx="9" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                    <ellipse cx="9.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                    <ellipse cx="15" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                    <ellipse cx="15.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                    <circle cx="10.5" cy="14.5" r="0.5" fill="currentColor"/>
+                    <circle cx="13.5" cy="14.5" r="0.5" fill="currentColor"/>
+                    <line x1="10" y1="16.5" x2="14" y2="16.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
                   </svg>
                 </div>
                 <div>
@@ -129,10 +139,15 @@ export default function SalesPitchAgent() {
               {messages.length === 0 && (
                 <div className="text-center py-12">
                   <div className="relative inline-block">
-                    <svg className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 3c-3.5 0-6 2.5-6 6 0 2 1 3.5 2 4.5L7 18h10l-1-4.5c1-1 2-2.5 2-4.5 0-3.5-2.5-6-6-6z"/>
-                      <circle cx="9" cy="10" r="1"/>
-                      <circle cx="15" cy="10" r="1"/>
+                    <svg className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 3C8.5 3 5.5 5.5 5 9c-.3 2 .5 4.5 1.5 6.5L8 21h8l1.5-5.5c1-2 1.8-4.5 1.5-6.5-.5-3.5-3.5-6-7-6z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <ellipse cx="9" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                      <ellipse cx="9.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                      <ellipse cx="15" cy="11" rx="2.2" ry="3" fill="currentColor"/>
+                      <ellipse cx="15.4" cy="10" rx="0.7" ry="1.2" fill="white"/>
+                      <circle cx="10.5" cy="14.5" r="0.5" fill="currentColor"/>
+                      <circle cx="13.5" cy="14.5" r="0.5" fill="currentColor"/>
+                      <line x1="10" y1="16.5" x2="14" y2="16.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
                     </svg>
                     <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full" />
                   </div>
