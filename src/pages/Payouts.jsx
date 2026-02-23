@@ -53,39 +53,44 @@ export default function Payouts() {
     // Track users with ec_rep role or admin
     const eligibleUsers = users.filter(u => u.role === 'ec_rep' || u.role === 'admin');
     eligibleUsers.forEach((user) => {
-      const name = user.full_name;
-      payouts[name] = { base: 0, commission: 0, total: 0, leads: [], email: user.email };
+      const firstName = user.full_name?.split(' ')[0] || user.full_name;
+      payouts[firstName] = { base: 0, commission: 0, total: 0, leads: [], email: user.email, fullName: user.full_name };
     });
 
     yearLeads.forEach((lead) => {
       const price = lead.project_price || 0;
 
-      // Base 45% for EC Tech assignment
-      const ecTech = lead.ec_tech;
-      if (ecTech && payouts[ecTech]) {
-        payouts[ecTech].base += price * 0.45;
+      // Base 45% EACH for Braden and Taylor on ALL closed won leads
+      if (payouts.Braden) {
+        payouts.Braden.base += price * 0.45;
+      }
+      if (payouts.Taylor) {
+        payouts.Taylor.base += price * 0.45;
       }
 
       // 10% commission based on call_made_by field
       const callMadeBy = lead.call_made_by;
-      if (callMadeBy && payouts[callMadeBy]) {
-        payouts[callMadeBy].commission += price * 0.10;
+      if (callMadeBy) {
+        const firstName = callMadeBy.split(' ')[0];
+        if (payouts[firstName]) {
+          payouts[firstName].commission += price * 0.10;
+        }
       }
 
       // Track leads for each person who gets a commission
-      Object.keys(payouts).forEach((name) => {
-        const hasCommission = callMadeBy === name;
-        const hasBase = ecTech === name;
+      Object.keys(payouts).forEach((firstName) => {
+        const hasCommission = callMadeBy && callMadeBy.split(' ')[0] === firstName;
+        const hasBase = firstName === 'Braden' || firstName === 'Taylor';
 
         if (hasCommission || hasBase) {
-          payouts[name].leads.push({ ...lead, hasCallCommission: hasCommission });
+          payouts[firstName].leads.push({ ...lead, hasCallCommission: hasCommission });
         }
       });
     });
 
     // Calculate totals
-    Object.keys(payouts).forEach((name) => {
-      payouts[name].total = payouts[name].base + payouts[name].commission;
+    Object.keys(payouts).forEach((firstName) => {
+      payouts[firstName].total = payouts[firstName].base + payouts[firstName].commission;
     });
 
     return payouts;
