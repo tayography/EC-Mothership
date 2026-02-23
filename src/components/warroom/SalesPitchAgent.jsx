@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, Send, Loader2, X } from "lucide-react";
+import { Bot, Send, Loader2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,17 +68,18 @@ export default function SalesPitchAgent() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             onClick={() => setExpanded(true)}
-            className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-2xl p-6 shadow-xl shadow-violet-500/20 transition-all select-none group"
+            className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-700 text-white rounded-2xl p-6 shadow-2xl shadow-cyan-500/30 transition-all select-none group relative overflow-hidden"
           >
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 backdrop-blur-sm w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-7 h-7" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 animate-pulse" />
+            <div className="relative flex items-center gap-4">
+              <div className="bg-white/30 backdrop-blur-md w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/40 shadow-lg">
+                <Bot className="w-7 h-7 animate-pulse" />
               </div>
               <div className="flex-1 text-left">
-                <h2 className="text-lg font-semibold mb-1">AI Sales Pitch Assistant</h2>
-                <p className="text-sm text-violet-100">Get help crafting pitches, handling objections, and closing deals</p>
+                <h2 className="text-lg font-bold mb-1 tracking-tight">AI Market Intel Assistant</h2>
+                <p className="text-sm text-cyan-50 font-medium">Data-backed industry research for closing deals</p>
               </div>
-              <div className="text-violet-200 group-hover:translate-x-1 transition-transform">
+              <div className="text-white group-hover:translate-x-1 transition-transform">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -91,35 +92,39 @@ export default function SalesPitchAgent() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-xl"
+            className="bg-gradient-to-br from-slate-900 via-blue-950 to-purple-950 border-2 border-cyan-500/30 rounded-2xl overflow-hidden shadow-2xl shadow-cyan-500/20"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-violet-500 to-purple-600 p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 backdrop-blur-sm w-10 h-10 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
+            <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 p-4 flex items-center justify-between border-b border-cyan-400/30 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-purple-400/10 animate-pulse" />
+              <div className="relative flex items-center gap-3">
+                <div className="bg-white/30 backdrop-blur-md w-10 h-10 rounded-xl flex items-center justify-center border border-white/40">
+                  <Bot className="w-5 h-5 text-white animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold">AI Sales Pitch Assistant</h3>
-                  <p className="text-xs text-violet-100">Ask me anything about sales pitches</p>
+                  <h3 className="text-white font-bold tracking-tight">AI Market Intel Assistant</h3>
+                  <p className="text-xs text-cyan-50 font-medium">Industry research & sales intelligence</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setExpanded(false)}
-                className="text-white hover:bg-white/20 rounded-xl select-none"
+                className="relative text-white hover:bg-white/20 rounded-xl select-none"
               >
                 <X className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Messages */}
-            <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-zinc-50 dark:bg-zinc-950/50">
+            <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-950 to-blue-950/50">
               {messages.length === 0 && (
                 <div className="text-center py-12">
-                  <Sparkles className="w-12 h-12 text-violet-400 mx-auto mb-3" />
-                  <p className="text-sm text-zinc-400">Start a conversation to get sales pitch help</p>
+                  <div className="relative inline-block">
+                    <Bot className="w-12 h-12 text-cyan-400 mx-auto mb-3 animate-pulse" />
+                    <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full" />
+                  </div>
+                  <p className="text-sm text-cyan-300/70 font-medium">Ask about any industry to get market research</p>
                 </div>
               )}
               
@@ -131,21 +136,21 @@ export default function SalesPitchAgent() {
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                       msg.role === "user"
-                        ? "bg-violet-600 text-white"
-                        : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30"
+                        : "bg-slate-800/80 backdrop-blur-sm border border-cyan-500/30 text-cyan-50 shadow-lg"
                     }`}
                   >
                     {msg.role === "user" ? (
-                      <p className="text-sm">{msg.content}</p>
+                      <p className="text-sm font-medium">{msg.content}</p>
                     ) : (
                       <ReactMarkdown
-                        className="text-sm prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                        className="text-sm prose prose-sm prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
                         components={{
-                          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                          ul: ({ children }) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
-                          ol: ({ children }) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
+                          p: ({ children }) => <p className="mb-2 last:mb-0 text-cyan-50">{children}</p>,
+                          ul: ({ children }) => <ul className="list-disc ml-4 mb-2 text-cyan-100">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal ml-4 mb-2 text-cyan-100">{children}</ol>,
                           li: ({ children }) => <li className="mb-1">{children}</li>,
-                          strong: ({ children }) => <strong className="font-semibold text-violet-600 dark:text-violet-400">{children}</strong>,
+                          strong: ({ children }) => <strong className="font-bold text-cyan-300">{children}</strong>,
                         }}
                       >
                         {msg.content}
@@ -157,8 +162,8 @@ export default function SalesPitchAgent() {
               
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-3">
-                    <Loader2 className="w-4 h-4 text-violet-600 animate-spin" />
+                  <div className="bg-slate-800/80 backdrop-blur-sm border border-cyan-500/30 rounded-2xl px-4 py-3 shadow-lg">
+                    <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
                   </div>
                 </div>
               )}
@@ -167,20 +172,20 @@ export default function SalesPitchAgent() {
             </div>
 
             {/* Input */}
-            <div className="border-t border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900">
+            <div className="border-t border-cyan-500/30 p-4 bg-gradient-to-r from-slate-900 to-blue-950">
               <div className="flex gap-2">
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask about pitch strategies, objections, stats..."
-                  className="flex-1 rounded-xl border-zinc-300 dark:border-zinc-700"
+                  placeholder="what are we sellin' today?"
+                  className="flex-1 rounded-xl bg-slate-800/50 border-cyan-500/30 text-cyan-50 placeholder:text-cyan-400/50 placeholder:italic focus:border-cyan-400 focus:ring-cyan-400/30"
                   disabled={loading || !conversation}
                 />
                 <Button
                   onClick={handleSend}
                   disabled={!input.trim() || loading || !conversation}
-                  className="bg-violet-600 hover:bg-violet-700 rounded-xl select-none px-4"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl select-none px-4 shadow-lg shadow-cyan-500/30"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
