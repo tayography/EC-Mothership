@@ -99,6 +99,17 @@ export default function Payouts() {
   const payouts = calculatePayouts();
   const totalRevenue = yearLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
   const canEdit = currentUser?.role === 'admin';
+  
+  // Filter payouts based on user role
+  const visiblePayouts = currentUser?.role === 'admin' 
+    ? payouts 
+    : currentUser 
+      ? Object.fromEntries(
+          Object.entries(payouts).filter(([name, data]) => 
+            data.email === currentUser.email
+          )
+        )
+      : {};
 
   return (
     <PageTransition>
@@ -164,7 +175,7 @@ export default function Payouts() {
 
       {/* Payout Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.entries(payouts).map(([name, data]) =>
+        {Object.entries(visiblePayouts).map(([name, data]) =>
         <div key={name} className="bg-white border border-zinc-200/60 rounded-2xl p-6 group">
             <h3 className="text-lg font-semibold text-zinc-900 mb-4">{name}</h3>
             

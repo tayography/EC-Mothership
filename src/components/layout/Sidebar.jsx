@@ -27,7 +27,7 @@ const allNavItems = [
   { name: "Analytics", icon: BarChart3, page: "Analytics" },
   { name: "Pricing", icon: DollarSign, page: "Pricing" },
   { name: "Commissions", icon: DollarSign, page: "Commissions", restrictedTo: ["Braden", "Taylor"] },
-  { name: "Payouts", icon: Wallet, page: "Payouts", restrictedTo: ["Braden", "Taylor"] },
+  { name: "Payouts", icon: Wallet, page: "Payouts", allowedRoles: ["admin", "ec_rep"] },
   { name: "Settings", icon: Settings, page: "Settings" },
 ];
 
@@ -41,6 +41,9 @@ export default function Sidebar({ currentPage }) {
   }, []);
 
   const navItems = allNavItems.filter(item => {
+    if (item.allowedRoles) {
+      return currentUser && item.allowedRoles.includes(currentUser.role);
+    }
     if (!item.restrictedTo) return true;
     if (!currentUser) return false;
     return currentUser.role === 'admin' || item.restrictedTo.includes(currentUser.full_name);
