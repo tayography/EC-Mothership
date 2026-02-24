@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Calculator as CalcIcon, Delete } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import PageTransition from "../components/layout/PageTransition";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-export default function Calculator() {
+export default function CalculatorDialog({ open, onOpenChange }) {
   const [display, setDisplay] = useState("0");
   const [previousValue, setPreviousValue] = useState(null);
   const [operation, setOperation] = useState(null);
@@ -87,50 +87,47 @@ export default function Calculator() {
   ];
 
   return (
-    <PageTransition>
-      <div className="max-w-md mx-auto">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
-            <CalcIcon className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-white">Calculator</h1>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Quick calculations</p>
-          </div>
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <CalcIcon className="w-5 h-5 text-blue-600" />
+            Calculator
+          </DialogTitle>
+        </DialogHeader>
 
-        <div className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden card-3d">
+        <div className="mt-4">
           {/* Display */}
-          <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 p-8 border-b border-white/10">
+          <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/20 dark:to-indigo-500/20 p-6 rounded-xl border border-white/10 mb-4">
             <div className="text-right">
               {operation && previousValue !== null && (
                 <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
                   {previousValue} {operation}
                 </div>
               )}
-              <div className="text-4xl font-semibold text-zinc-900 dark:text-white break-all">
+              <div className="text-3xl font-semibold text-zinc-900 dark:text-white break-all">
                 {display}
               </div>
             </div>
           </div>
 
           {/* Buttons */}
-          <div className="p-4">
+          <div>
             {/* Clear and Backspace */}
             <div className="grid grid-cols-2 gap-2 mb-2">
               <Button
                 onClick={handleClear}
                 variant="destructive"
-                className="h-14 text-lg font-semibold"
+                className="h-12 text-base font-semibold"
               >
                 C
               </Button>
               <Button
                 onClick={handleBackspace}
                 variant="secondary"
-                className="h-14 text-lg font-semibold"
+                className="h-12 text-base font-semibold"
               >
-                <Delete className="w-5 h-5" />
+                <Delete className="w-4 h-4" />
               </Button>
             </div>
 
@@ -147,9 +144,7 @@ export default function Calculator() {
                       else handleNumber(btn);
                     }}
                     variant={["+", "-", "×", "÷"].includes(btn) ? "default" : btn === "=" ? "default" : "secondary"}
-                    className={`h-14 text-xl font-semibold ${
-                      btn === "0" ? "col-span-1" : ""
-                    }`}
+                    className="h-12 text-lg font-semibold"
                   >
                     {btn}
                   </Button>
@@ -158,7 +153,7 @@ export default function Calculator() {
             ))}
           </div>
         </div>
-      </div>
-    </PageTransition>
+      </DialogContent>
+    </Dialog>
   );
 }

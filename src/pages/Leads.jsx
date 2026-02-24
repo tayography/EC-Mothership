@@ -9,6 +9,7 @@ import LeadCard from "../components/leads/LeadCard";
 import LeadFormDialog from "../components/leads/LeadFormDialog";
 import LeadsToCall from "../components/leads/LeadsToCall";
 import ImportLeadsDialog from "../components/leads/ImportLeadsDialog";
+import CalculatorDialog from "../components/calculator/CalculatorDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
 const stages = [
@@ -28,6 +29,7 @@ export default function Leads() {
   const [editingLead, setEditingLead] = useState(null);
   const [expandedStages, setExpandedStages] = useState({});
   const [showImport, setShowImport] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const queryClient = useQueryClient();
 
@@ -176,7 +178,7 @@ export default function Leads() {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => window.location.href = "/Calculator"}
+            onClick={() => setShowCalculator(true)}
             variant="outline"
             size="icon"
             className="rounded-xl select-none"
@@ -293,6 +295,11 @@ export default function Leads() {
         open={showImport}
         onOpenChange={setShowImport}
         onSuccess={() => queryClient.invalidateQueries({ queryKey: ["leads"] })}
+      />
+
+      <CalculatorDialog
+        open={showCalculator}
+        onOpenChange={setShowCalculator}
       />
       </div>
     </PageTransition>

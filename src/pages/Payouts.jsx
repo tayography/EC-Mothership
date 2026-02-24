@@ -6,11 +6,13 @@ import PageTransition from "../components/layout/PageTransition";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import CalculatorDialog from "../components/calculator/CalculatorDialog";
 
 export default function Payouts() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [currentUser, setCurrentUser] = useState(null);
   const [editingPayout, setEditingPayout] = useState(null);
+  const [showCalculator, setShowCalculator] = useState(false);
 
   React.useEffect(() => {
     base44.auth.me().then(user => setCurrentUser(user)).catch(() => {});
@@ -122,7 +124,7 @@ export default function Payouts() {
           </div>
           <div className="flex gap-2 items-center">
             <Button
-              onClick={() => window.location.href = "/Calculator"}
+              onClick={() => setShowCalculator(true)}
               variant="outline"
               size="icon"
               className="rounded-xl"
@@ -262,6 +264,11 @@ export default function Payouts() {
           </div>
         )}
       </div>
+
+      <CalculatorDialog
+        open={showCalculator}
+        onOpenChange={setShowCalculator}
+      />
     </PageTransition>);
 
 }
