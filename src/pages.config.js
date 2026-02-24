@@ -59,6 +59,7 @@ import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
 import WarRoom from './pages/WarRoom';
+import Calculator from './pages/Calculator';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +76,7 @@ export const PAGES = {
     "Settings": Settings,
     "TimeTracking": TimeTracking,
     "WarRoom": WarRoom,
+    "Calculator": Calculator,
 }
 
 export const pagesConfig = {
