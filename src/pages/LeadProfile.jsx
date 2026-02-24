@@ -206,7 +206,7 @@ export default function LeadProfile() {
                   <Save className="w-4 h-4 mr-2" />
                   {updateMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
-                {lead.status !== "closed_won" && lead.status !== "closed_lost" && (
+                {lead.status !== "closed_won" && lead.status !== "closed_lost" && lead.status !== "not_interested" && (
                   <>
                     <Button
                       onClick={() => {
@@ -229,6 +229,17 @@ export default function LeadProfile() {
                       className="border-red-600 text-red-600 hover:bg-red-50"
                     >
                       Mark Lost
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        handleChange("status", "not_interested");
+                        updateMutation.mutate({ ...formData, status: "not_interested" });
+                      }}
+                      disabled={updateMutation.isPending}
+                      variant="outline"
+                      className="border-orange-600 text-orange-600 hover:bg-orange-50"
+                    >
+                      Not Interested
                     </Button>
                   </>
                 )}
@@ -328,6 +339,7 @@ export default function LeadProfile() {
                     <SelectItem value="soft_close">Soft Close</SelectItem>
                     <SelectItem value="closed_won">Closed Won</SelectItem>
                     <SelectItem value="closed_lost">Closed Lost</SelectItem>
+                    <SelectItem value="not_interested">Not Interested</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
