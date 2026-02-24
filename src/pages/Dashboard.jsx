@@ -50,7 +50,7 @@ export default function Dashboard() {
   });
 
   // Calculate current metrics
-  const activeLeads = allLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status));
+  const activeLeads = allLeads.filter(l => !["closed_won", "closed_lost", "not_interested"].includes(l.status));
   const totalPipeline = activeLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
   const wonLeads = allLeads.filter(l => l.status === "closed_won");
   const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
@@ -66,8 +66,8 @@ export default function Dashboard() {
   const oldPipeline = oldLeads.reduce((sum, l) => sum + (l.project_price || 0), 0) || 1;
   const pipelineGrowth = ((recentPipeline / oldPipeline) * 100);
 
-  const recentActive = recentLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status)).length;
-  const oldActive = oldLeads.filter(l => !["closed_won", "closed_lost"].includes(l.status)).length || 1;
+  const recentActive = recentLeads.filter(l => !["closed_won", "closed_lost", "not_interested"].includes(l.status)).length;
+  const oldActive = oldLeads.filter(l => !["closed_won", "closed_lost", "not_interested"].includes(l.status)).length || 1;
   const activeGrowth = ((recentActive / oldActive) * 100);
 
   const recentWon = recentLeads.filter(l => l.status === "closed_won").length;
