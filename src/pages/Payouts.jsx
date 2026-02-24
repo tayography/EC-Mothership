@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { DollarSign, TrendingUp, Calendar, Pencil } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar, Pencil, Calculator } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Payouts() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -119,18 +120,28 @@ export default function Payouts() {
             <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">Payouts</h1>
             <p className="text-sm text-zinc-400 mt-1">Commission payouts by fiscal year</p>
           </div>
-          <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {fiscalYears.map((year) =>
-              <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              )}
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2 items-center">
+            <Button
+              onClick={() => window.location.href = "/Calculator"}
+              variant="outline"
+              size="icon"
+              className="rounded-xl"
+            >
+              <Calculator className="w-4 h-4" />
+            </Button>
+            <Select value={selectedYear.toString()} onValueChange={(v) => setSelectedYear(parseInt(v))}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {fiscalYears.map((year) =>
+                <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

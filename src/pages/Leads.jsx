@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Phone, ChevronDown, Upload } from "lucide-react";
+import { Plus, Phone, ChevronDown, Upload, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
@@ -175,6 +175,14 @@ export default function Leads() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            onClick={() => window.location.href = "/Calculator"}
+            variant="outline"
+            size="icon"
+            className="rounded-xl select-none"
+          >
+            <Calculator className="w-4 h-4" />
+          </Button>
           <Button
             onClick={() => setShowImport(true)}
             variant="outline"
