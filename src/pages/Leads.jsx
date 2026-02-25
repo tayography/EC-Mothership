@@ -154,7 +154,9 @@ export default function Leads() {
     return acc;
   }, {});
 
-  const totalValue = leads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+  const totalValue = leads
+    .filter(l => l.status !== "closed_lost" && l.status !== "not_interested")
+    .reduce((sum, l) => sum + (l.project_price || 0), 0);
 
   return (
     <PageTransition>
