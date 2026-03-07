@@ -255,9 +255,16 @@ export default function Payouts() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center justify-between pt-2">
+              <div className="flex items-center justify-between pt-2 border-b border-zinc-100 pb-3">
                 <span className="text-base font-semibold text-zinc-900">Total Payout</span>
                 <span className="text-2xl font-bold text-emerald-600">${data.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex items-center justify-between pt-3">
+                <div>
+                  <span className="text-sm font-medium text-zinc-700">Potential Earnings</span>
+                  <p className="text-xs text-zinc-400">From interested leads</p>
+                </div>
+                <span className="text-lg font-bold text-sky-600">${calculatePotentialEarnings(name).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
               </div>
             </div>
 
