@@ -148,7 +148,7 @@ export default function Dashboard() {
   ];
 
   // Leaderboard based on call_made_by field for closed_won leads
-  const leaderboard = ["Braden", "Taylor", "Jami", "Preston"].map(name => {
+  const leaderboard = ["Braden", "Taylor", "Jami"].map(name => {
     const userWonLeads = allLeads.filter(l =>
       l.status === "closed_won" && l.call_made_by === name
     );
