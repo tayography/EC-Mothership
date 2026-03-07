@@ -18,7 +18,7 @@ import { format } from "date-fns";
 
 export default function Dashboard() {
   const [showTimeDialog, setShowTimeDialog] = useState(false);
-  const [revenuePeriod, setRevenuePeriod] = useState("7D");
+  const [revenuePeriod, setRevenuePeriod] = useState("All");
   const queryClient = useQueryClient();
 
   const { data: leads = [], isLoading: loadingLeads } = useQuery({
