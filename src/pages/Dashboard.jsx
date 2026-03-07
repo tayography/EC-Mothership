@@ -156,11 +156,17 @@ export default function Dashboard() {
     const userWonLeads = allLeads.filter(l => 
       l.status === "closed_won" && l.created_by === peopleMap[name]
     );
+    const potentialLeads = allLeads.filter(l =>
+      !["closed_won", "closed_lost", "not_interested"].includes(l.status) &&
+      l.call_made_by === name
+    );
+    const potentialEarnings = potentialLeads.reduce((sum, l) => sum + (l.project_price || 0) * 0.10, 0);
     return {
       name,
       email: peopleMap[name],
       wins: userWonLeads.length,
-      revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0)
+      revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0),
+      potentialEarnings
     };
   }).sort((a, b) => b.wins - a.wins);
 
