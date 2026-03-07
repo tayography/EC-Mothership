@@ -51,6 +51,7 @@ export default function Dashboard() {
 
   // Calculate current metrics
   const activeLeads = allLeads.filter(l => !["closed_won", "closed_lost", "not_interested"].includes(l.status));
+  const interestedLeads = allLeads.filter(l => l.interested === true && !["closed_won", "closed_lost", "not_interested"].includes(l.status));
   const totalPipeline = activeLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
   const wonLeads = allLeads.filter(l => l.status === "closed_won");
   const wonValue = wonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
