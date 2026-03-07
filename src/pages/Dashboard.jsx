@@ -192,107 +192,70 @@ export default function Dashboard() {
         <CallCounter wonLeadsCount={wonLeads.length} />
       </div>
 
-      {/* Leaderboard */}
-      <div className="mb-6">
-        <div className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-2xl card-3d">
-          <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">🏆 Leaderboard</h3>
-          <div className="flex gap-2 flex-wrap">
-            {leaderboard.map((rep, index) => (
-              <div
-                key={rep.name}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30"
-              >
-                <span className={`text-xs font-bold ${
-                  index === 0 ? 'text-amber-500' :
-                  index === 1 ? 'text-zinc-400' :
-                  'text-orange-400'
-                }`}>#{index + 1}</span>
-                <span className="text-sm font-medium text-zinc-900 dark:text-white">{rep.name}</span>
-                <span className="text-sm font-bold text-emerald-600">{rep.wins}</span>
-                <span className="text-xs text-zinc-400">wins</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        {/* Chart - spans 2 cols */}
-        <div className="lg:col-span-2">
-          <ChartCard 
-            title="Revenue Overview" 
-            subtitle="Closed won revenue by day"
-            selectedPeriod={revenuePeriod}
-            onPeriodChange={setRevenuePeriod}
-            data={(() => {
-              const today = new Date();
-              const businessStartDate = new Date('2026-02-01');
-              let startDate;
-              let dateFormat;
-              
-              if (revenuePeriod === "7D") {
-                startDate = new Date(today);
-                startDate.setDate(startDate.getDate() - 7);
-                dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
-              } else if (revenuePeriod === "1M") {
-                startDate = new Date(today);
-                startDate.setDate(startDate.getDate() - 30);
-                dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
-              } else if (revenuePeriod === "1Y") {
-                startDate = new Date(today);
-                startDate.setDate(startDate.getDate() - 365);
-                dateFormat = (d) => `${d.toLocaleString('default', { month: 'short' })}`;
-              }
-              
-              // Use the later date between business start and selected period
-              const effectiveStartDate = startDate < businessStartDate ? businessStartDate : startDate;
-              
-              const dailyRevenue = {};
-              
-              // Initialize all days from effective start to today with $0
-              for (let d = new Date(effectiveStartDate); d <= today; d.setDate(d.getDate() + 1)) {
-                const dateKey = d.toISOString().split('T')[0];
-                dailyRevenue[dateKey] = 0;
-              }
-              
-              // Calculate cumulative revenue up to start of period
-              let cumulativeBeforePeriod = 0;
-              allLeads
-                .filter(l => l.status === "closed_won" && l.project_price > 0)
-                .forEach(lead => {
-                  const leadDate = new Date(lead.updated_date || lead.created_date);
-                  if (leadDate >= businessStartDate && leadDate < effectiveStartDate) {
-                    cumulativeBeforePeriod += lead.project_price;
-                  }
-                });
-              
-              // Add revenue from closed won leads within the period
-              allLeads
-                .filter(l => l.status === "closed_won" && l.project_price > 0)
-                .forEach(lead => {
-                  const leadDate = new Date(lead.updated_date || lead.created_date);
-                  const dateKey = leadDate.toISOString().split('T')[0];
-                  if (dailyRevenue.hasOwnProperty(dateKey)) {
-                    dailyRevenue[dateKey] += lead.project_price;
-                  }
-                });
-              
-              // Calculate cumulative revenue starting from pre-period total
-              let cumulative = cumulativeBeforePeriod;
-              const allDates = Object.keys(dailyRevenue).sort();
-              
-              return allDates.map(date => {
-                cumulative += dailyRevenue[date];
-                const d = new Date(date);
-                return {
-                  name: dateFormat(d),
-                  value: cumulative
-                };
+        {/* Chart */}
+        <ChartCard 
+          title="Revenue Overview" 
+          subtitle="Closed won revenue"
+          selectedPeriod={revenuePeriod}
+          onPeriodChange={setRevenuePeriod}
+          data={(() => {
+            const today = new Date();
+            const businessStartDate = new Date('2026-01-17');
+            let startDate;
+            let dateFormat;
+            
+            if (revenuePeriod === "All") {
+              startDate = new Date(businessStartDate);
+              dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+            } else if (revenuePeriod === "7D") {
+              startDate = new Date(today);
+              startDate.setDate(startDate.getDate() - 7);
+              dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+            } else if (revenuePeriod === "30D") {
+              startDate = new Date(today);
+              startDate.setDate(startDate.getDate() - 30);
+              dateFormat = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
+            }
+            
+            const effectiveStartDate = startDate < businessStartDate ? businessStartDate : startDate;
+            const dailyRevenue = {};
+            
+            for (let d = new Date(effectiveStartDate); d <= today; d.setDate(d.getDate() + 1)) {
+              dailyRevenue[d.toISOString().split('T')[0]] = 0;
+            }
+            
+            let cumulativeBeforePeriod = 0;
+            allLeads
+              .filter(l => l.status === "closed_won" && l.project_price > 0)
+              .forEach(lead => {
+                const leadDate = new Date(lead.updated_date || lead.created_date);
+                if (leadDate >= businessStartDate && leadDate < effectiveStartDate) {
+                  cumulativeBeforePeriod += lead.project_price;
+                }
               });
-            })()} 
-          />
-        </div>
+            
+            allLeads
+              .filter(l => l.status === "closed_won" && l.project_price > 0)
+              .forEach(lead => {
+                const leadDate = new Date(lead.updated_date || lead.created_date);
+                const dateKey = leadDate.toISOString().split('T')[0];
+                if (dailyRevenue.hasOwnProperty(dateKey)) {
+                  dailyRevenue[dateKey] += lead.project_price;
+                }
+              });
+            
+            let cumulative = cumulativeBeforePeriod;
+            return Object.keys(dailyRevenue).sort().map(date => {
+              cumulative += dailyRevenue[date];
+              return { name: dateFormat(new Date(date)), value: cumulative };
+            });
+          })()} 
+        />
+
+        {/* Leaderboard */}
+        <LeaderboardCard leaderboard={leaderboard} />
 
         {/* Follow-Up Calendar */}
         <FollowUpCalendar leads={allLeads} />
