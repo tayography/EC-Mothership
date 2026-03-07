@@ -156,17 +156,11 @@ export default function Dashboard() {
     const userWonLeads = allLeads.filter(l => 
       l.status === "closed_won" && l.created_by === peopleMap[name]
     );
-    const potentialLeads = allLeads.filter(l =>
-      !["closed_won", "closed_lost", "not_interested"].includes(l.status) &&
-      l.call_made_by === name
-    );
-    const potentialEarnings = potentialLeads.reduce((sum, l) => sum + (l.project_price || 0) * 0.10, 0);
     return {
       name,
       email: peopleMap[name],
       wins: userWonLeads.length,
-      revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0),
-      potentialEarnings
+      revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0)
     };
   }).sort((a, b) => b.wins - a.wins);
 
@@ -225,9 +219,6 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-zinc-900">{rep.name}</p>
                     {rep.revenue > 0 && (
                       <p className="text-xs text-emerald-600">${rep.revenue.toLocaleString()} revenue</p>
-                    )}
-                    {rep.potentialEarnings > 0 && (
-                      <p className="text-xs text-amber-600">~${rep.potentialEarnings.toLocaleString()} potential commission</p>
                     )}
                   </div>
                 </div>
