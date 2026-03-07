@@ -101,6 +101,24 @@ export default function Payouts() {
 
   const payouts = calculatePayouts();
   const totalRevenue = yearLeads.reduce((sum, l) => sum + (l.project_price || 0), 0);
+
+  // Interested leads (not closed won/lost/not_interested)
+  const interestedLeads = leads.filter(l => l.interested === true && !["closed_won", "closed_lost", "not_interested"].includes(l.status));
+
+  // Calculate potential earnings per person from interested leads
+  const calculatePotentialEarnings = (firstName) => {
+    let potential = 0;
+    interestedLeads.forEach((lead) => {
+      const price = lead.project_price || 0;
+      if (firstName === 'Braden' || firstName === 'Taylor') {
+        potential += price * 0.45;
+      }
+      if (lead.call_made_by && lead.call_made_by.split(' ')[0] === firstName) {
+        potential += price * 0.10;
+      }
+    });
+    return potential;
+  };
   const canEdit = currentUser?.role === 'admin';
   
   // Filter payouts based on user role
