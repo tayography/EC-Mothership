@@ -124,6 +124,7 @@ export default function Dashboard() {
     {
       title: "Interested Leads",
       value: interestedLeads.length.toString(),
+      subtitle: `$${interestedLeadsValue.toLocaleString()} total value`,
       change: activeGrowth,
       icon: Target,
       color: "sky",
