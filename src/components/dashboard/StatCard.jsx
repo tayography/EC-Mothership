@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
-export default function StatCard({ title, value, change, changeLabel, icon: Icon, color = "violet", index = 0 }) {
+export default function StatCard({ title, value, subtitle, change, changeLabel, icon: Icon, color = "violet", index = 0 }) {
   const colorMap = {
     violet: { bg: "bg-violet-50", icon: "text-violet-500", ring: "ring-violet-100" },
     emerald: { bg: "bg-emerald-50", icon: "text-emerald-500", ring: "ring-emerald-100" },
@@ -34,6 +34,7 @@ export default function StatCard({ title, value, change, changeLabel, icon: Icon
       </div>
       <p className="text-2xl font-semibold tracking-tight text-zinc-900">{value}</p>
       <p className="text-xs text-zinc-400 mt-1">{title}</p>
+      {subtitle && <p className="text-xs text-emerald-600 font-medium mt-0.5">{subtitle}</p>}
     </motion.div>
   );
 }
