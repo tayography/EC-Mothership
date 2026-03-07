@@ -193,39 +193,24 @@ export default function Dashboard() {
 
       {/* Leaderboard */}
       <div className="mb-6">
-        <div className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl card-3d">
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4">🏆 Leaderboard</h3>
-          <div className="space-y-2">
+        <div className="bg-white/30 dark:bg-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-4 shadow-2xl card-3d">
+          <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">🏆 Leaderboard</h3>
+          <div className="flex gap-2 flex-wrap">
             {leaderboard.map((rep, index) => (
               <div
-                key={rep.email}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-white/40 dark:hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                key={rep.name}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/50 dark:bg-white/5 border border-white/30"
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-semibold text-sm ${
-                    index === 0 ? 'bg-amber-100 text-amber-700' :
-                    index === 1 ? 'bg-zinc-200 text-zinc-700' :
-                    index === 2 ? 'bg-orange-100 text-orange-700' :
-                    'bg-zinc-50 text-zinc-500'
-                  }`}>
-                    {index + 1}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-zinc-900">{rep.name}</p>
-                    {rep.revenue > 0 && (
-                      <p className="text-xs text-emerald-600">${rep.revenue.toLocaleString()} revenue</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-zinc-900">{rep.wins}</span>
-                  <span className="text-xs text-zinc-400">wins</span>
-                </div>
+                <span className={`text-xs font-bold ${
+                  index === 0 ? 'text-amber-500' :
+                  index === 1 ? 'text-zinc-400' :
+                  'text-orange-400'
+                }`}>#{index + 1}</span>
+                <span className="text-sm font-medium text-zinc-900 dark:text-white">{rep.name}</span>
+                <span className="text-sm font-bold text-emerald-600">{rep.wins}</span>
+                <span className="text-xs text-zinc-400">wins</span>
               </div>
             ))}
-            {leaderboard.length === 0 && (
-              <p className="text-sm text-zinc-400 text-center py-4">No reps yet</p>
-            )}
           </div>
         </div>
       </div>
