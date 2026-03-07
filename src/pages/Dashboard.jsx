@@ -121,8 +121,8 @@ export default function Dashboard() {
       color: "cyan",
     },
     {
-      title: "Active Leads",
-      value: activeLeads.length.toString(),
+      title: "Interested Leads",
+      value: interestedLeads.length.toString(),
       change: activeGrowth,
       icon: Target,
       color: "sky",
