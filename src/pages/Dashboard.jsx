@@ -226,12 +226,19 @@ export default function Dashboard() {
               dailyRevenue[d.toISOString().split('T')[0]] = 0;
             }
             
+            // Helper: get a YYYY-MM-DD string for a lead, preferring closed_won_date
+            const getLeadDateKey = (lead) => {
+              if (lead.closed_won_date) return lead.closed_won_date; // already YYYY-MM-DD
+              const d = new Date(lead.updated_date || lead.created_date);
+              return d.toISOString().split('T')[0];
+            };
+
             let cumulativeBeforePeriod = 0;
             allLeads
               .filter(l => l.status === "closed_won" && l.project_price > 0)
               .forEach(lead => {
-                const leadDate = lead.closed_won_date ? new Date(lead.closed_won_date) : new Date(lead.updated_date || lead.created_date);
-                if (leadDate >= businessStartDate && leadDate < effectiveStartDate) {
+                const key = getLeadDateKey(lead);
+                if (key >= businessStartDate.toISOString().split('T')[0] && key < effectiveStartDate.toISOString().split('T')[0]) {
                   cumulativeBeforePeriod += lead.project_price;
                 }
               });
@@ -239,8 +246,7 @@ export default function Dashboard() {
             allLeads
               .filter(l => l.status === "closed_won" && l.project_price > 0)
               .forEach(lead => {
-                const leadDate = lead.closed_won_date ? new Date(lead.closed_won_date) : new Date(lead.updated_date || lead.created_date);
-                const dateKey = leadDate.toISOString().split('T')[0];
+                const dateKey = getLeadDateKey(lead);
                 if (dailyRevenue.hasOwnProperty(dateKey)) {
                   dailyRevenue[dateKey] += lead.project_price;
                 }
