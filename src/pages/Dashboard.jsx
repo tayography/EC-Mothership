@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import PageTransition from "../components/layout/PageTransition";
 import TopBar from "../components/layout/TopBar";
 import StatCard from "../components/dashboard/StatCard";
+import CallCounter from "../components/dashboard/CallCounter";
 import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
 import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
