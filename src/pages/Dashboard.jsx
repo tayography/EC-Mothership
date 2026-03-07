@@ -230,7 +230,7 @@ export default function Dashboard() {
             allLeads
               .filter(l => l.status === "closed_won" && l.project_price > 0)
               .forEach(lead => {
-                const leadDate = new Date(lead.updated_date || lead.created_date);
+                const leadDate = lead.closed_won_date ? new Date(lead.closed_won_date) : new Date(lead.updated_date || lead.created_date);
                 if (leadDate >= businessStartDate && leadDate < effectiveStartDate) {
                   cumulativeBeforePeriod += lead.project_price;
                 }
@@ -239,7 +239,7 @@ export default function Dashboard() {
             allLeads
               .filter(l => l.status === "closed_won" && l.project_price > 0)
               .forEach(lead => {
-                const leadDate = new Date(lead.updated_date || lead.created_date);
+                const leadDate = lead.closed_won_date ? new Date(lead.closed_won_date) : new Date(lead.updated_date || lead.created_date);
                 const dateKey = leadDate.toISOString().split('T')[0];
                 if (dailyRevenue.hasOwnProperty(dateKey)) {
                   dailyRevenue[dateKey] += lead.project_price;
