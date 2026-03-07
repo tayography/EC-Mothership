@@ -52,7 +52,7 @@ export default function ChartCard({ title, subtitle, data = defaultData, selecte
         </div>
         {onPeriodChange && (
           <div className="flex gap-1">
-            {["7D", "1M", "1Y"].map((period) => (
+            {["All", "7D", "30D"].map((period) => (
               <button
                 key={period}
                 onClick={() => onPeriodChange(period)}
