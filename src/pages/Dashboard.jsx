@@ -146,20 +146,13 @@ export default function Dashboard() {
     },
   ];
 
-  // Calculate leaderboard - only track Braden, Taylor, and Jami
-  const peopleMap = {
-    "Braden": "braden@theendlesscreative.com",
-    "Taylor": "taylor@theendlesscreative.com",
-    "Jami": "Jami.schnakenberg85@gmail.com"
-  };
-
-  const leaderboard = ["Braden", "Taylor", "Jami"].map(name => {
-    const userWonLeads = allLeads.filter(l => 
-      l.status === "closed_won" && l.created_by === peopleMap[name]
+  // Leaderboard based on call_made_by field for closed_won leads
+  const leaderboard = ["Braden", "Taylor", "Jami", "Preston"].map(name => {
+    const userWonLeads = allLeads.filter(l =>
+      l.status === "closed_won" && l.call_made_by === name
     );
     return {
       name,
-      email: peopleMap[name],
       wins: userWonLeads.length,
       revenue: userWonLeads.reduce((sum, l) => sum + (l.project_price || 0), 0)
     };
