@@ -11,6 +11,7 @@ import ChartCard from "../components/dashboard/ChartCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
 import ManualTimeEntryDialog from "../components/time/ManualTimeEntryDialog";
 import FollowUpCalendar from "../components/dashboard/FollowUpCalendar";
+import LeaderboardCard from "../components/dashboard/LeaderboardCard";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 
