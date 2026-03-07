@@ -226,6 +226,9 @@ export default function Dashboard() {
                     {rep.revenue > 0 && (
                       <p className="text-xs text-emerald-600">${rep.revenue.toLocaleString()} revenue</p>
                     )}
+                    {rep.potentialEarnings > 0 && (
+                      <p className="text-xs text-amber-600">~${rep.potentialEarnings.toLocaleString()} potential commission</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
