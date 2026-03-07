@@ -352,6 +352,17 @@ export default function LeadProfile() {
                   disabled={!canEdit}
                 />
               </div>
+              {formData.status === "closed_won" && (
+                <div>
+                  <Label className="text-xs text-zinc-500 mb-1.5">Closed Won Date</Label>
+                  <Input
+                    type="date"
+                    value={formData.closed_won_date || ""}
+                    onChange={(e) => handleChange("closed_won_date", e.target.value)}
+                    disabled={!canEdit}
+                  />
+                </div>
+              )}
               <div>
                 <Label className="text-xs text-zinc-500 mb-1.5">Lead Need</Label>
                 <Textarea
