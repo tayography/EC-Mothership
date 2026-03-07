@@ -210,8 +210,10 @@ export default function LeadProfile() {
                   <>
                     <Button
                       onClick={() => {
-                        handleChange("status", "closed_won");
-                        updateMutation.mutate({ ...formData, status: "closed_won" });
+                        const today = new Date().toISOString().split('T')[0];
+                        const updates = { ...formData, status: "closed_won", closed_won_date: formData.closed_won_date || today };
+                        setFormData(updates);
+                        updateMutation.mutate(updates);
                       }}
                       disabled={updateMutation.isPending}
                       variant="outline"
