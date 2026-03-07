@@ -121,13 +121,13 @@ export default function Payouts() {
   };
   const canEdit = currentUser?.role === 'admin';
   
-  // Filter payouts based on user role
+  // Filter payouts based on user role, exclude Preston
   const visiblePayouts = currentUser?.role === 'admin' 
-    ? payouts 
+    ? Object.fromEntries(Object.entries(payouts).filter(([name]) => name !== 'Preston'))
     : currentUser 
       ? Object.fromEntries(
           Object.entries(payouts).filter(([name, data]) => 
-            data.email === currentUser.email
+            data.email === currentUser.email && name !== 'Preston'
           )
         )
       : {};
