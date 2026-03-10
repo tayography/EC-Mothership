@@ -49,6 +49,7 @@
  */
 import Analytics from './pages/Analytics';
 import Commissions from './pages/Commissions';
+import Dashboard from './pages/Dashboard';
 import LeadHistory from './pages/LeadHistory';
 import LeadProfile from './pages/LeadProfile';
 import Leads from './pages/Leads';
@@ -58,13 +59,13 @@ import Projects from './pages/Projects';
 import Settings from './pages/Settings';
 import TimeTracking from './pages/TimeTracking';
 import WarRoom from './pages/WarRoom';
-import Dashboard from './pages/Dashboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Analytics": Analytics,
     "Commissions": Commissions,
+    "Dashboard": Dashboard,
     "LeadHistory": LeadHistory,
     "LeadProfile": LeadProfile,
     "Leads": Leads,
@@ -74,7 +75,6 @@ export const PAGES = {
     "Settings": Settings,
     "TimeTracking": TimeTracking,
     "WarRoom": WarRoom,
-    "Dashboard": Dashboard,
 }
 
 export const pagesConfig = {

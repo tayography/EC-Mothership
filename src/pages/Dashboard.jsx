@@ -21,34 +21,28 @@ export default function Dashboard() {
   const [revenuePeriod, setRevenuePeriod] = useState("All");
   const queryClient = useQueryClient();
 
-  const { data: leads = [], isLoading: loadingLeads } = useQuery({
-    queryKey: ["leads"],
-    queryFn: () => base44.entities.Lead.list("-created_date", 4),
-    initialData: [],
-  });
-
-  const { data: allLeads = [] } = useQuery({
+  const { data: allLeads = [], isLoading: loadingLeads } = useQuery({
     queryKey: ["all-leads"],
-    queryFn: () => base44.entities.Lead.list(),
+    queryFn: () => base44.entities.Lead.list("-created_date"),
     initialData: [],
+    staleTime: 60_000,
   });
 
-  const { data: users = [] } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => base44.entities.User.list(),
-    initialData: [],
-  });
+  // Derive recent leads from allLeads instead of a separate query
+  const leads = allLeads.slice(0, 4);
 
   const { data: activities = [], isLoading: loadingActivities } = useQuery({
     queryKey: ["activities"],
     queryFn: () => base44.entities.Activity.list("-created_date", 6),
     initialData: [],
+    staleTime: 60_000,
   });
 
   const { data: metrics = [] } = useQuery({
     queryKey: ["metrics"],
     queryFn: () => base44.entities.Metric.list("-created_date"),
     initialData: [],
+    staleTime: 60_000,
   });
 
   // Calculate current metrics
