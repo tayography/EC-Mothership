@@ -103,7 +103,6 @@ export default function Dashboard() {
       return timeEntry;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leads"] });
       queryClient.invalidateQueries({ queryKey: ["all-leads"] });
       setShowTimeDialog(false);
     },
